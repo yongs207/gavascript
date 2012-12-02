@@ -877,7 +877,7 @@ module TypeScript {
             }
         }
 
-        public typeCheckBoundDecl(varDecl: BoundDecl): VarDecl {
+        public typeCheckBoundDecl(varDecl: BoundDecl): LocalDecl {
             // symbol has already been added to the scope
             var infSym = <InferenceSymbol>varDecl.sym;
             if (infSym == null) {
@@ -987,7 +987,7 @@ module TypeScript {
             if (varDecl.sym && varDecl.sym.container) {
                 this.checkTypePrivacy(varDecl.sym.getType(), varDecl.sym, (typeName: string) => this.varPrivacyErrorReporter(varDecl, typeName));
             }
-            return <VarDecl>varDecl;
+            return <LocalDecl>varDecl;
         }
         private varPrivacyErrorReporter(varDecl: BoundDecl, typeName: string) {
             if (hasFlag(varDecl.varFlags, VarFlags.Public)) {
@@ -1114,7 +1114,7 @@ module TypeScript {
                     }
                     if (!this.checker.styleSettings.innerScopeDeclEscape) {
                         if (infSym.declAST && (infSym.declAST.nodeType == NodeType.VarDecl)) {
-                            if (this.nestingLevel < (<VarDecl>infSym.declAST).nestingLevel) {
+                            if (this.nestingLevel < (<LocalDecl>infSym.declAST).nestingLevel) {
                                 this.checker.errorReporter.styleError(ast, "Illegal reference to a variable defined in more nested scope");
                             }
                         }
@@ -1663,7 +1663,7 @@ module TypeScript {
             var len = vars.members.length;
             var hasArgsDef = false;
             for (var i = 0; i < len; i++) {
-                var local = <VarDecl>vars.members[i];
+                var local = <LocalDecl>vars.members[i];
                 if (((local.sym == null) || (local.sym.kind() != SymbolKind.Field))) {
                     var result: Symbol = null;
                     if ((result = table.lookup(local.id.text)) == null) {
@@ -2928,7 +2928,7 @@ module TypeScript {
             forInStmt.lval = this.cast(this.typeCheck(forInStmt.lval), this.checker.stringType);
             if (forInStmt.lval.nodeType == NodeType.VarDecl) {
 
-                var varDecl = <VarDecl>forInStmt.lval;
+                var varDecl = <LocalDecl>forInStmt.lval;
                 if (varDecl.typeExpr) {
                     this.checker.errorReporter.simpleError(varDecl, "Variable declarations for for/in expressions may not contain a type annotation");
                 }

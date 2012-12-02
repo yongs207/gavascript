@@ -992,7 +992,7 @@ module TypeScript {
             return functionGroupSymbol;
         }
 
-        public resolveVarDecl(varDecl: VarDecl, scope: SymbolScope): Symbol {
+        public resolveVarDecl(varDecl: LocalDecl, scope: SymbolScope): Symbol {
             var field = new ValueLocation();
             var fieldSymbol =
                 new FieldSymbol(varDecl.id.text, varDecl.minChar, this.locationInfo.unitIndex,
@@ -1094,8 +1094,8 @@ module TypeScript {
                                         funcDecl.type = (<TypeSymbol>propSym).type;
                                     }
                                     else {
-                                        id = (<VarDecl>propDecl).id;
-                                        propSym = this.resolveVarDecl(<VarDecl>propDecl, scope);
+                                        id = (<LocalDecl>propDecl).id;
+                                        propSym = this.resolveVarDecl(<LocalDecl>propDecl, scope);
                                     }
                                     if (addMember) {
                                         if (id && hasFlag(id.flags, ASTFlags.OptionalName)) {

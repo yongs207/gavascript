@@ -268,7 +268,7 @@ module TypeScript {
         }
         public getVarDeclFromSymbol() {
             if (this.declAST != null && this.declAST.nodeType == NodeType.VarDecl) {
-                return <VarDecl>this.declAST;
+                return <LocalDecl>this.declAST;
             }
             return null;
         }

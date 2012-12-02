@@ -329,7 +329,7 @@ module TypeScript {
             function cleanASTType(ast: AST, parent: AST): AST {
                 ast.type = null;
                 if (ast.nodeType == NodeType.VarDecl) {
-                    var vardecl = <VarDecl>ast;
+                    var vardecl = <LocalDecl>ast;
                     vardecl.sym = null;
                 }
                 else if (ast.nodeType == NodeType.ArgDecl) {

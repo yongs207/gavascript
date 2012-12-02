@@ -206,12 +206,12 @@ module TypeScript {
             this.emitTypeNamesMember(typeNameMembers);
         }
 
-        public VarDeclCallback(pre: bool, varDecl: VarDecl): bool {
+        public VarDeclCallback(pre: bool, varDecl: LocalDecl): bool {
             if (pre && this.canEmitSignature(ToDeclFlags(varDecl.varFlags), false)) {
                 var interfaceMember = (this.getAstDeclarationContainer().nodeType == NodeType.Interface);
                 if (!interfaceMember) {
                     // If it is var list of form var a, b, c = emit it only if count > 0 - which will be when emitting first var                    // If it is var list of form  var a = varList count will be 0                    if (this.varListCount >= 0) {
-                        this.emitDeclFlags(ToDeclFlags(varDecl.varFlags), "var");
+                        this.emitDeclFlags(ToDeclFlags(varDecl.varFlags), "local");
                         this.varListCount = -this.varListCount;
                     }
                     this.declFile.Write(varDecl.id.text);
@@ -412,7 +412,7 @@ module TypeScript {
                 return false;
             }
 
-            this.emitDeclFlags(ToDeclFlags(accessorSymbol.flags), "var");
+            this.emitDeclFlags(ToDeclFlags(accessorSymbol.flags), "local");
             this.declFile.Write(funcDecl.name.text);
             var propertyType = accessorSymbol.getType();
             if (this.canEmitTypeAnnotationSignature(ToDeclFlags(accessorSymbol.flags))) {
@@ -430,7 +430,7 @@ module TypeScript {
                 for (var i = 0; i < argsLen; i++) {
                     var argDecl = <ArgDecl>funcDecl.args.members[i];
                     if (hasFlag(argDecl.varFlags, VarFlags.Property)) {
-                        this.emitDeclFlags(ToDeclFlags(argDecl.varFlags), "var");
+                        this.emitDeclFlags(ToDeclFlags(argDecl.varFlags), "local");
                         this.declFile.Write(argDecl.id.text);
 
                         if (argDecl.typeExpr && this.canEmitTypeAnnotationSignature(ToDeclFlags(argDecl.varFlags))) {
@@ -526,7 +526,7 @@ module TypeScript {
                 var memberDecl: AST = moduleDecl.members.members[j];
                 if (memberDecl.nodeType == NodeType.VarDecl) {
                     this.emitIndent();
-                    this.declFile.WriteLine((<VarDecl>memberDecl).id.text + ",");
+                    this.declFile.WriteLine((<LocalDecl>memberDecl).id.text + ",");
                 } else {
                     CompilerDiagnostics.assert(memberDecl.nodeType != NodeType.Asg, "We want to catch this");
                 }

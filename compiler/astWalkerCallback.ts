@@ -77,7 +77,7 @@ module TypeScript.AstWalkerWithDetailCallback {
         TypeAssertionCallback? (pre, ast: AST): bool;
         FuncDeclCallback? (pre, funcDecl: FuncDecl): bool;
         MemberCallback? (pre, ast: AST): bool;
-        VarDeclCallback? (pre, varDecl: VarDecl): bool;
+        VarDeclCallback? (pre, varDecl: LocalDecl): bool;
         ArgDeclCallback? (pre, ast: AST): bool;
         ReturnCallback? (pre, ast: AST): bool;
         BreakCallback? (pre, ast: AST): bool;

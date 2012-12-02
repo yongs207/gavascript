@@ -932,47 +932,47 @@ module TypeScript {
             return -1;
         }
 
-        public speculateRegex(): Token {
-            if (noRegexTable[this.prevTok.tokenId] != undefined) {
-                return null;
-            }
-            var svPos = this.pos;
-            var svCol = this.col;
-            // first char is '/' and has been skipped
-            var index = this.findClosingSLH();
-            if (index > 0) {
-                // found closing /
-                var pattern = this.src.substring(svPos, index);
-                var flags = "";
-                this.pos = index + 1;
-                this.ch = this.peekChar();
-                var flagsStart = this.pos;
-                // TODO: check for duplicate flags
-                while ((this.ch == LexCode_i) || (this.ch == LexCode_g) || (this.ch == LexCode_m)) {
-                    this.nextChar();
-                }
-                if ((this.pos - flagsStart) > 3) {
-                    return null;
-                }
-                else {
-                    flags = this.src.substring(flagsStart, this.pos);
-                }
-                var regex = undefined;
-                try {
-                    regex = new RegExp(pattern, flags);
-                }
-                catch (regexException) {
-                }
-                if (regex) {
-                    // no line boundary in regex string
-                    this.col = svCol + (this.pos - this.startPos);
-                    return new RegexToken(regex);
-                }
-            }
-            this.pos = svPos;
-            this.col = svCol;
-            return null;
-        }
+        //public speculateRegex(): Token {
+        //    if (noRegexTable[this.prevTok.tokenId] != undefined) {
+        //        return null;
+        //    }
+        //    var svPos = this.pos;
+        //    var svCol = this.col;
+        //    // first char is '/' and has been skipped
+        //    var index = this.findClosingSLH();
+        //    if (index > 0) {
+        //        // found closing /
+        //        var pattern = this.src.substring(svPos, index);
+        //        var flags = "";
+        //        this.pos = index + 1;
+        //        this.ch = this.peekChar();
+        //        var flagsStart = this.pos;
+        //        // TODO: check for duplicate flags
+        //        while ((this.ch == LexCode_i) || (this.ch == LexCode_g) || (this.ch == LexCode_m)) {
+        //            this.nextChar();
+        //        }
+        //        if ((this.pos - flagsStart) > 3) {
+        //            return null;
+        //        }
+        //        else {
+        //            flags = this.src.substring(flagsStart, this.pos);
+        //        }
+        //        var regex = undefined;
+        //        try {
+        //            regex = new RegExp(pattern, flags);
+        //        }
+        //        catch (regexException) {
+        //        }
+        //        if (regex) {
+        //            // no line boundary in regex string
+        //            this.col = svCol + (this.pos - this.startPos);
+        //            return new RegexToken(regex);
+        //        }
+        //    }
+        //    this.pos = svPos;
+        //    this.col = svCol;
+        //    return null;
+        //}
 
         public lastTokenHadNewline() {
             return this.prevLine != this.startLine;
@@ -1192,7 +1192,7 @@ module TypeScript {
                     this.nextChar();
                     return staticTokens[TokenID.SColon];
                 }
-                else if ((this.ch == LexCodeAPO) || (this.ch == LexCodeQUO)) {
+                else if ((this.ch == LexCodeAPO) || (this.ch == LexCodeQUO)) {//TODO long string
                     var endCode = this.ch;
                     var prevCh = 0;
                     // accumulate with escape characters; convert to unescaped string

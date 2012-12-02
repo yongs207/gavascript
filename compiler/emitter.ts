@@ -83,6 +83,8 @@ module TypeScript {
         public sourceMapper: SourceMapper = null;
         public captureThisStmtString = "var _this = this;";
         private varListCount: number = 0; 
+        private varListInits:ASTList = null;
+        private varListInitCount: number;
 
         constructor (public checker: TypeChecker, public outfile: ITextWriter, public emitOptions: IEmitOptions) { 
         }
@@ -130,6 +132,8 @@ module TypeScript {
 
         public setInVarBlock(count: number) {
             this.varListCount = count;
+            this.varListInitCount = count;
+            this.varListInits = new ASTList();
         }
 
         public setInObjectLiteral(val: bool): bool {
@@ -423,15 +427,15 @@ module TypeScript {
                 }
                 this.setContainer(tempContainer);
             }
-            this.writeLineToOutput(") {");
+            this.writeLineToOutput(") ");
 
             if (funcDecl.isConstructor) {
                 this.recordSourceMappingNameStart("constructor");
-            } else if (funcDecl.isGetAccessor()) {
+            } /*else if (funcDecl.isGetAccessor()) {
                 this.recordSourceMappingNameStart("get_" + funcDecl.getNameText());
             } else if (funcDecl.isSetAccessor()) {
                 this.recordSourceMappingNameStart("set_" + funcDecl.getNameText());
-            } else {
+            } */else {
                 this.recordSourceMappingNameStart(funcDecl.getNameText());
             }
             this.indenter.increaseIndent();
@@ -441,13 +445,13 @@ module TypeScript {
                 var arg = defaultArgs[i];
                 this.emitIndent();
                 this.recordSourceMappingStart(arg);
-                this.writeToOutput("if (typeof " + arg.id.actualText + " === \"undefined\") { ");//
+                this.writeToOutput("if (typeof " + arg.id.actualText + " === \"undefined\") then ");//
                 this.recordSourceMappingStart(arg.id);
                 this.writeToOutput(arg.id.actualText);
                 this.recordSourceMappingEnd(arg.id);
                 this.writeToOutput(" = ");
                 this.emitJavascript(arg.init, TokenID.LParen, false);
-                this.writeLineToOutput("; }")
+                this.writeLineToOutput("; end")
                 this.recordSourceMappingEnd(arg);
             }
 
@@ -464,7 +468,7 @@ module TypeScript {
                             this.emitIndent();
                             this.recordSourceMappingStart(arg);
                             this.recordSourceMappingStart(arg.id);
-                            this.writeToOutput("this." + arg.id.actualText);
+                            this.writeToOutput("self." + arg.id.actualText);
                             this.recordSourceMappingEnd(arg.id);
                             this.writeToOutput(" = ");
                             this.recordSourceMappingStart(arg.id);
@@ -489,26 +493,26 @@ module TypeScript {
                 var lastArg = <ArgDecl>funcDecl.args.members[argsLen - 1];
                 this.emitIndent();
                 this.recordSourceMappingStart(lastArg);
-                this.writeToOutput("var ");
+                this.writeToOutput("local ");
                 this.recordSourceMappingStart(lastArg.id);
                 this.writeToOutput(lastArg.id.actualText);
                 this.recordSourceMappingEnd(lastArg.id);
                 this.writeLineToOutput(" = [];");
                 this.recordSourceMappingEnd(lastArg);
                 this.emitIndent();
-                this.writeToOutput("for (")
+                this.writeToOutput("for ")
                 this.recordSourceMappingStart(lastArg);
-                this.writeToOutput("var _i = 0;");
+                this.writeToOutput("_i = 0");
                 this.recordSourceMappingEnd(lastArg);
-                this.writeToOutput(" ");
+                this.writeToOutput(", ");
                 this.recordSourceMappingStart(lastArg);
-                this.writeToOutput("_i < (arguments.length - " + (argsLen - 1) + ")");
+                this.writeToOutput("(arguments.length - " + (argsLen - 1) + ")");
                 this.recordSourceMappingEnd(lastArg);
-                this.writeToOutput("; "); 
+                //this.writeToOutput(" "); 
                 this.recordSourceMappingStart(lastArg);
-                this.writeToOutput("_i++");
+                //this.writeToOutput("_i++");
                 this.recordSourceMappingEnd(lastArg);
-                this.writeLineToOutput(") {");
+                this.writeLineToOutput(" do");
                 this.indenter.increaseIndent();
                 this.emitIndent();
 
@@ -518,7 +522,7 @@ module TypeScript {
                 this.writeLineToOutput("");
                 this.indenter.decreaseIndent();
                 this.emitIndent();
-                this.writeLineToOutput("}");
+                this.writeLineToOutput("end");
             }
 
             // if it's a class, emit the uninitializedMembers, first emit the non-proto class body members
@@ -528,7 +532,7 @@ module TypeScript {
 
                 for (var i = 0; i < nProps; i++) {
                     if ((<ASTList>this.thisClassNode.members).members[i].nodeType == NodeType.VarDecl) {
-                        var varDecl = <VarDecl>(<ASTList>this.thisClassNode.members).members[i];
+                        var varDecl = <LocalDecl>(<ASTList>this.thisClassNode.members).members[i];
                         if (!hasFlag(varDecl.varFlags, VarFlags.Static) && varDecl.init) {
                             this.emitIndent();
                             this.emitJavascriptVarDecl(varDecl, TokenID.Tilde);
@@ -544,7 +548,7 @@ module TypeScript {
             this.indenter.decreaseIndent();
             this.emitIndent();
             this.recordSourceMappingStart(funcDecl.endingToken);
-            this.writeToOutput("}");
+            this.writeToOutput("end");
             this.recordSourceMappingNameEnd();
             this.recordSourceMappingEnd(funcDecl.endingToken);
             this.recordSourceMappingEnd(funcDecl);
@@ -563,7 +567,7 @@ module TypeScript {
                 this.writeLineToOutput("");
                 this.emitIndent();
                 var funcName = funcDecl.getNameText();
-                this.writeLineToOutput("(function (" + funcName + ") {");
+                this.writeLineToOutput("(function (" + funcName + ") ");
                 this.indenter.increaseIndent();
 
                 var len = 0;
@@ -605,7 +609,7 @@ module TypeScript {
                 this.emitIndent();
                 var printProto = isProtoMember && this.thisClassNode;
                 var prefix = printProto ? this.thisClassNode.name.actualText + ".prototype." : "";
-                this.writeLineToOutput("})(" + prefix + funcName + ");")
+                this.writeLineToOutput("end)(" + prefix + funcName + ");")
             }
             this.emitParensAndCommentsInPlace(funcDecl, false);
             /// TODO: See the other part of this at the beginning of function
@@ -871,7 +875,7 @@ module TypeScript {
                 hasSelfRef = funcDecl.hasSelfReference();
                 this.recordSourceMappingStart(funcDecl);
                 if (hasFlag(funcDecl.fncFlags, FncFlags.Exported | FncFlags.ClassPropertyMethodExported) && funcDecl.type.symbol.container == this.checker.gloMod && !funcDecl.isConstructor) {
-                    this.writeToOutput("this." + funcName + " = ");
+                    this.writeToOutput("self." + funcName + " = ");
                     this.emitInnerFunction(funcDecl, false, false, bases, hasSelfRef, this.thisClassNode);
                 }
                 else {
@@ -908,7 +912,7 @@ module TypeScript {
             }
         }
 
-        public emitAmbientVarDecl(varDecl: VarDecl) {
+        public emitAmbientVarDecl(varDecl: LocalDecl) {
             if (varDecl.init) {
                 this.emitParensAndCommentsInPlace(varDecl, true);
                 this.recordSourceMappingStart(varDecl);
@@ -928,7 +932,7 @@ module TypeScript {
             // If it is var list of form var a, b, c = emit it only if count > 0 - which will be when emitting first var
             // If it is var list of form  var a = varList count will be 0
             if (this.varListCount >= 0) {
-                this.writeToOutput("var ");
+                this.writeToOutput("local ");
                 this.varListCount = -this.varListCount;
             }
             return true;
@@ -943,7 +947,7 @@ module TypeScript {
             }
         }
 
-        public emitJavascriptVarDecl(varDecl: VarDecl, tokenId: TokenID) {
+        public emitJavascriptVarDecl(varDecl: LocalDecl, tokenId: TokenID) {
             if ((varDecl.varFlags & VarFlags.Ambient) == VarFlags.Ambient) {
                 this.emitAmbientVarDecl(varDecl);
                 this.onEmitVar();
@@ -963,7 +967,7 @@ module TypeScript {
                                 this.writeToOutput(sym.container.name + ".");
                             }
                             else {
-                                this.writeToOutput("this.");
+                                this.writeToOutput("self.");
                             }
                         }
                     }
@@ -988,7 +992,7 @@ module TypeScript {
                         // function, constructor, method etc.
                         if (tokenId != TokenID.LParen) {
                             if (hasFlag(sym.flags, SymbolFlags.Exported) && sym.container == this.checker.gloMod) {
-                                this.writeToOutput("this.");
+                                this.writeToOutput("self.");
                             }
                             else {
                                 this.emitVarDeclVar();
@@ -1005,8 +1009,11 @@ module TypeScript {
                 this.writeToOutput(varDecl.id.actualText);
                 this.recordSourceMappingEnd(varDecl.id);
                 if (hasInitializer) {
-                    this.writeToOutputTrimmable(" = ");
-                    this.emitJavascript(varDecl.init, TokenID.Comma, false);
+                    if (this.varListInits == null) {//not in block
+                        this.writeToOutputTrimmable(" = ");
+                        this.emitJavascript(varDecl.init, TokenID.Comma, false);
+                    }else
+                        this.varListInits.append(varDecl.init);
                 }
                 else if (sym && sym.isMember() &&
                          (this.emitState.container == EmitContainer.Constructor)) {
@@ -1017,12 +1024,27 @@ module TypeScript {
                 if ((tokenId != TokenID.LParen)) {
                     if (this.varListCount < 0) {
                         this.writeToOutput(", ");
-                    } else if (tokenId != TokenID.FOR) {
+                    } /*else if (tokenId != TokenID.FOR) {
                         this.writeToOutputTrimmable(";");
-                    }
+                    }*/
                 }
+                this.varListInitCount--;
                 this.recordSourceMappingEnd(varDecl);
                 this.emitParensAndCommentsInPlace(varDecl, false);
+                if (this.varListInits!=null&&this.varListInitCount == 0) {
+                    var initCount = this.varListInits.members.length;
+                    if (initCount > 0) {
+                        this.writeToOutputTrimmable(" = ");
+                        for (var i = 0; i < initCount-1; i++) {
+                            this.emitJavascript(this.varListInits.members[i], TokenID.Comma, false);
+                            this.writeToOutput(", ");
+                        }
+                        this.emitJavascript(this.varListInits.members[initCount-1], TokenID.Comma, false);
+                    }
+                }
+
+
+
             }
         }
 
@@ -1146,7 +1168,7 @@ module TypeScript {
 
                         this.recordSourceMappingStart(stmts);
                         if (!hasOnlyBlockStatement) {
-                            this.writeLineToOutput(" {");
+                            //this.writeLineToOutput(" {");
                             this.indenter.increaseIndent();
                         }
                         this.emitJavascriptList(stmts, null, TokenID.SColon, true, false, false);
@@ -1154,7 +1176,7 @@ module TypeScript {
                             this.writeLineToOutput("");
                             this.indenter.decreaseIndent();
                             this.emitIndent();
-                            this.writeToOutput("}");
+                            //this.writeToOutput("}");
                         }
                         this.recordSourceMappingEnd(stmts);
                     }
@@ -1164,7 +1186,7 @@ module TypeScript {
                 }
             }
             else if (emitEmptyBod) {
-                this.writeToOutput("{ }");
+                //this.writeToOutput("{ }");
             }
         }
 
@@ -1295,7 +1317,7 @@ module TypeScript {
                                     this.emitIndent();
                                     this.recordSourceMappingStart(arg);
                                     this.recordSourceMappingStart(arg.id);
-                                    this.writeToOutput("this." + arg.id.actualText);
+                                    this.writeToOutput("self." + arg.id.actualText);
                                     this.recordSourceMappingEnd(arg.id);
                                     this.writeToOutput(" = ");
                                     this.recordSourceMappingStart(arg.id);
@@ -1311,7 +1333,7 @@ module TypeScript {
 
                         for (var iMember = 0; iMember < nProps; iMember++) {
                             if ((<ASTList>this.thisClassNode.members).members[iMember].nodeType == NodeType.VarDecl) {
-                                var varDecl = <VarDecl>(<ASTList>this.thisClassNode.members).members[iMember];
+                                var varDecl = <LocalDecl>(<ASTList>this.thisClassNode.members).members[iMember];
                                 if (!hasFlag(varDecl.varFlags, VarFlags.Static) && varDecl.init) {
                                     this.emitIndent();
                                     this.emitJavascriptVarDecl(varDecl, TokenID.Tilde);
@@ -1325,7 +1347,7 @@ module TypeScript {
 
                     var isStaticDecl =
                                 (emitNode.nodeType == NodeType.FuncDecl && hasFlag((<FuncDecl>emitNode).fncFlags, FncFlags.Static)) ||
-                                (emitNode.nodeType == NodeType.VarDecl && hasFlag((<VarDecl>emitNode).varFlags, VarFlags.Static))
+                                (emitNode.nodeType == NodeType.VarDecl && hasFlag((<LocalDecl>emitNode).varFlags, VarFlags.Static))
 
                     if (onlyStatics ? !isStaticDecl : isStaticDecl) {
                         continue;
@@ -1344,8 +1366,8 @@ module TypeScript {
                              (emitNode.nodeType != NodeType.Module) &&
                              (emitNode.nodeType != NodeType.Interface) &&
                              (!((emitNode.nodeType == NodeType.VarDecl) &&
-                                ((((<VarDecl>emitNode).varFlags) & VarFlags.Ambient) == VarFlags.Ambient) &&
-                                (((<VarDecl>emitNode).init) == null)) && this.varListCount >= 0) &&
+                                ((((<LocalDecl>emitNode).varFlags) & VarFlags.Ambient) == VarFlags.Ambient) &&
+                                (((<LocalDecl>emitNode).init) == null)) && this.varListCount >= 0) &&
                              (emitNode.nodeType != NodeType.Block || (<Block>emitNode).isStatementBlock) &&
                              (emitNode.nodeType != NodeType.EndCode) &&
                              (emitNode.nodeType != NodeType.FuncDecl)) {
@@ -1368,8 +1390,8 @@ module TypeScript {
                 (ast.nodeType != NodeType.Block)) {
                 if ((ast.nodeType != NodeType.Interface) &&
                     (!((ast.nodeType == NodeType.VarDecl) &&
-                       ((((<VarDecl>ast).varFlags) & VarFlags.Ambient) == VarFlags.Ambient) &&
-                       (((<VarDecl>ast).init) == null)) && this.varListCount >= 0) &&
+                       ((((<LocalDecl>ast).varFlags) & VarFlags.Ambient) == VarFlags.Ambient) &&
+                       (((<LocalDecl>ast).init) == null)) && this.varListCount >= 0) &&
                     (ast.nodeType != NodeType.EndCode) &&
                     ((ast.nodeType != NodeType.FuncDecl) ||
                      (this.emitState.container != EmitContainer.Constructor))) {
@@ -1448,7 +1470,7 @@ module TypeScript {
                 }
             }
             else if (member.nodeType == NodeType.VarDecl) {
-                var varDecl = <VarDecl>member;
+                var varDecl = <LocalDecl>member;
 
                 if (varDecl.init) {
                     this.emitIndent();
@@ -1574,7 +1596,7 @@ module TypeScript {
                     // output initialized properties
                     for (var i = 0; i < members.length; i++) {
                         if (members[i].nodeType == NodeType.VarDecl) {
-                            var varDecl = <VarDecl>members[i];
+                            var varDecl = <LocalDecl>members[i];
                             if (!hasFlag(varDecl.varFlags, VarFlags.Static) && varDecl.init) {
                                 this.writeLineToOutput("");
                                 this.emitIndent();
@@ -1624,7 +1646,7 @@ module TypeScript {
                         }
                     }
                     else if (memberDecl.nodeType == NodeType.VarDecl) {
-                        var varDecl = <VarDecl>memberDecl;
+                        var varDecl = <LocalDecl>memberDecl;
                         if (hasFlag(varDecl.varFlags, VarFlags.Static)) {
                             this.emitIndent();
                             this.recordSourceMappingStart(varDecl);

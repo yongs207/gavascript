@@ -69,13 +69,13 @@ module TypeScript {
                         emitter.writeToOutput("_this");
                     }
                     else {
-                        emitter.writeToOutput("this");
+                        emitter.writeToOutput("self");
                     }
                     emitter.recordSourceMappingEnd(this);
                     break;
                 case NodeType.Null:
                     emitter.recordSourceMappingStart(this);
-                    emitter.writeToOutput("null");
+                    emitter.writeToOutput("nil");
                     emitter.recordSourceMappingEnd(this);
                     emitter.recordSourceMappingEnd(this);
                     break;
@@ -641,10 +641,10 @@ module TypeScript {
 
                 emitter.emitJavascript(this.operand1, binTokenId, false);
 
-                if (tokenTable[binTokenId].text == "instanceof") {
+                /*if (tokenTable[binTokenId].text == "instanceof") {
                     emitter.writeToOutput(" instanceof ");
                 }
-                else if (tokenTable[binTokenId].text == "in") {
+                else*/ if (tokenTable[binTokenId].text == "in") {
                     emitter.writeToOutput(" in ");
                 }
                 else {
@@ -792,6 +792,7 @@ module TypeScript {
     //    }
     //}
 
+    //todo long string token
     export class StringLiteral extends AST {
 
         constructor (public text: string) {
@@ -841,7 +842,7 @@ module TypeScript {
 
                 emitter.recordSourceMappingStart(this);
                 emitter.emitParensAndCommentsInPlace(this, true);
-                emitter.writeToOutput("var " + this.id.actualText + " = ");
+                emitter.writeToOutput("local " + this.id.actualText + " = ");
                 emitter.modAliasId = this.id.actualText;
                 emitter.firstModAlias = this.firstAliasedModToString();
                 emitter.emitJavascript(this.alias, TokenID.Tilde, false);
@@ -907,7 +908,7 @@ module TypeScript {
         }
     }
 
-    export class VarDecl extends BoundDecl {
+    export class LocalDecl extends BoundDecl {
 
         constructor (id: Identifier, nest: number) {
             super(id, NodeType.VarDecl, nest);
@@ -922,7 +923,7 @@ module TypeScript {
         }
 
         public treeViewLabel() {
-            return "var " + this.id.actualText;
+            return "local " + this.id.actualText;
         }
     }
 
@@ -967,7 +968,7 @@ module TypeScript {
         public freeVariables: Symbol[] = [];
         public unitIndex = -1;
         public classDecl: Record = null;
-        public boundToProperty: VarDecl = null;
+        public boundToProperty: LocalDecl = null;
         public isOverload = false;
         public innerStaticFuncs: FuncDecl[] = [];
         public isTargetTypedAsMethod = false;
@@ -1152,7 +1153,7 @@ module TypeScript {
                         }
                     }
                     else if (stmt.nodeType == NodeType.VarDecl) {
-                        if (!hasFlag((<VarDecl>stmt).varFlags, VarFlags.Ambient)) {
+                        if (!hasFlag((<LocalDecl>stmt).varFlags, VarFlags.Ambient)) {
                             return true;
                         }
                     }
@@ -1378,7 +1379,8 @@ module TypeScript {
     }
 
     export class Block extends Statement {
-
+        //for local decal list
+        
         constructor (public stmts: ASTList, public isStatementBlock: bool) {
             super(NodeType.Block);
         }
@@ -1387,7 +1389,7 @@ module TypeScript {
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             if (this.isStatementBlock) {
-                emitter.writeLineToOutput(" {");
+                emitter.writeLineToOutput("");
                 emitter.indenter.increaseIndent();
             } else {
                 emitter.setInVarBlock(this.stmts.members.length);
@@ -1399,7 +1401,7 @@ module TypeScript {
             if (this.isStatementBlock) {
                 emitter.indenter.decreaseIndent();
                 emitter.emitIndent();
-                emitter.writeToOutput("}");
+                emitter.writeToOutput("");
             }
             emitter.setInObjectLiteral(temp);
             emitter.recordSourceMappingEnd(this);
@@ -1500,10 +1502,11 @@ module TypeScript {
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             var temp = emitter.setInObjectLiteral(false);
-            emitter.writeToOutput("while(");
-            emitter.emitJavascript(this.cond, TokenID.REPEAT, false);
-            emitter.writeToOutput(")");
+            emitter.writeToOutput("while ");
+            emitter.emitJavascript(this.cond, TokenID.WHILE, false);
+            emitter.writeToOutput(" do ");
             emitter.emitJavascriptStatements(this.body, false, false);
+            emitter.writeToOutput("end ");
             emitter.setInObjectLiteral(temp);
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);
@@ -1557,14 +1560,14 @@ module TypeScript {
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             var temp = emitter.setInObjectLiteral(false);
-            emitter.writeToOutput("do");
+            emitter.writeToOutput("repeat ");
             emitter.emitJavascriptStatements(this.body, true, false);
             emitter.recordSourceMappingStart(this.untilAST);
-            emitter.writeToOutput("while");
+            emitter.writeToOutput("until ");
             emitter.recordSourceMappingEnd(this.untilAST);
-            emitter.writeToOutput('(');
+            //emitter.writeToOutput('(');
             emitter.emitJavascript(this.cond, TokenID.RParen, false);
-            emitter.writeToOutput(")");
+            //emitter.writeToOutput(")");
             emitter.setInObjectLiteral(temp);
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);
@@ -1605,7 +1608,7 @@ module TypeScript {
         public isStatementOrExpression() { return true; }
         public thenBod: AST;
         public elseBod: AST = null;
-        public elseifStatement: Statement[]=[];
+        public elseifStatement: IfStatement[]=[];
 
         constructor (public cond: AST) {
             super(NodeType.If);
@@ -1613,7 +1616,7 @@ module TypeScript {
 
         public isCompoundStatement() { return true; }
 
-        public addElseif(statement:Statement) {
+        public addElseif(statement:IfStatement) {
             this.elseifStatement[this.elseifStatement.length] = statement;
         }
 
@@ -1621,14 +1624,23 @@ module TypeScript {
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             var temp = emitter.setInObjectLiteral(false);
-            emitter.writeToOutput("if(");
+            emitter.writeToOutput("if ");
             emitter.emitJavascript(this.cond, TokenID.IF, false);
-            emitter.writeToOutput(")");
+            emitter.writeToOutput(" then ");
             emitter.emitJavascriptStatements(this.thenBod, true, false);
+
+            for (var i = 0; i < this.elseifStatement.length; i++) {
+                emitter.writeToOutput("elseif ");
+                emitter.emitJavascript(this.elseifStatement[i].cond, TokenID.ELSEIF, false);
+                emitter.writeToOutput(" then ");
+                emitter.emitJavascriptStatements(this.elseifStatement[i].thenBod, true, false);
+            }
+
             if (this.elseBod) {
-                emitter.writeToOutput(" else");
+                emitter.writeToOutput("else ");
                 emitter.emitJavascriptStatements(this.elseBod, true, true);
             }
+            emitter.writeToOutput("end");
             emitter.setInObjectLiteral(temp);
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);
@@ -1861,7 +1873,7 @@ module TypeScript {
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             var temp = emitter.setInObjectLiteral(false);
-            emitter.writeToOutput("for(");
+            emitter.writeToOutput("for ");
             if (this.init) {
                 if (this.init.nodeType != NodeType.List) {
                     emitter.emitJavascript(this.init, TokenID.FOR, false);
@@ -1871,12 +1883,13 @@ module TypeScript {
                     emitter.emitJavascriptList(this.init, null, TokenID.FOR, false, false, false);
                 }
             }
-            emitter.writeToOutput("; ");
+            emitter.writeToOutput(", ");
             emitter.emitJavascript(this.cond, TokenID.FOR, false);
-            emitter.writeToOutput("; ");
+            emitter.writeToOutput(", ");
             emitter.emitJavascript(this.incr, TokenID.FOR, false);
-            emitter.writeToOutput(")");
+            emitter.writeToOutput(" do ");
             emitter.emitJavascriptStatements(this.body, true, false);
+            emitter.writeToOutput("end ");
             emitter.setInObjectLiteral(temp);
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);

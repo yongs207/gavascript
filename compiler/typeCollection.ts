@@ -497,7 +497,7 @@ module TypeScript {
 
     export function preCollectVarDeclTypes(ast: AST, parent: AST, context: TypeCollectionContext) {
         var scopeChain = context.scopeChain;
-        var varDecl = <VarDecl>ast;
+        var varDecl = <LocalDecl>ast;
         var isAmbient = hasFlag(varDecl.varFlags, VarFlags.Ambient);
         var isExported = hasFlag(varDecl.varFlags, VarFlags.Exported);
         var isGlobal = context.scopeChain.container == context.checker.gloMod;

@@ -354,7 +354,7 @@ module TypeScript {
             this.pushDeclLists();
             var members = new ASTList();
             members.minChar = membersMinChar;
-            var mapDecl = new VarDecl(new Identifier("_map"), 0);
+            var mapDecl = new LocalDecl(new Identifier("_map"), 0);
             mapDecl.varFlags |= VarFlags.Exported;
             mapDecl.varFlags |= VarFlags.Private;
 
@@ -418,7 +418,7 @@ module TypeScript {
                                              new StringLiteral('"' + memberName.actualText + '"'));
                     members.append(map);
                 }
-                var member = new VarDecl(memberName, this.nestingLevel);
+                var member = new LocalDecl(memberName, this.nestingLevel);
                 member.minChar = minChar;
                 member.limChar = limChar;
                 member.init = memberValue;
@@ -1809,7 +1809,7 @@ module TypeScript {
 
         public parseClassMemberVariableDeclaration(text: Identifier, minChar: number, isDeclaredInConstructor: bool, errorRecoverySet: ErrorRecoverySet, modifiers: Modifiers) {
 
-            var varDecl = new VarDecl(text, this.nestingLevel);
+            var varDecl = new LocalDecl(text, this.nestingLevel);
             varDecl.minChar = minChar;
             var isStatic = false;
             varDecl.preComments = this.parseComments();
@@ -2028,8 +2028,8 @@ module TypeScript {
             return interfaceDecl;
         }
 
-        public makeVarDecl(id: Identifier, nest: number): VarDecl {
-            var varDecl = new VarDecl(id, nest);
+        public makeVarDecl(id: Identifier, nest: number): LocalDecl {
+            var varDecl = new LocalDecl(id, nest);
             var currentVarList = this.topVarList();
             if (currentVarList) {
                 currentVarList.append(varDecl);
@@ -2095,7 +2095,7 @@ module TypeScript {
                         this.tok = this.scanner.scan();
                     }
 
-                    var epd = new VarDecl(new MissingIdentifier(), this.nestingLevel);
+                    var epd = new LocalDecl(new MissingIdentifier(), this.nestingLevel);
                     epd.flags |= ASTFlags.Error;
                     epd.minChar = eminChar;
                     epd.limChar = this.scanner.lastTokenLimChar();
@@ -2203,7 +2203,7 @@ module TypeScript {
                 return funcDecl;
             }
             else {
-                var varDecl = new VarDecl(text, this.nestingLevel);
+                var varDecl = new LocalDecl(text, this.nestingLevel);
                 varDecl.minChar = minChar;
                 if (this.tok.tokenId == TokenID.Colon) {
                     this.tok = this.scanner.scan();
@@ -2262,16 +2262,16 @@ module TypeScript {
             var isConst = hasFlag(modifiers, Modifiers.Readonly);
             var minChar = this.scanner.startPos;
             this.tok = this.scanner.scan();
-            var varDecl: VarDecl = null;
+            var varDecl: LocalDecl = null;
             var declList: ASTList = null;
             var multivar = false;
             var varDeclPreComments = this.parseComments();
-            var varDeclList = new VarDecl[];
+            var varDeclList = new LocalDecl[];
             for (var i=0 ; ;i++) {//TODO:add index
                 if ((this.tok.tokenId != TokenID.ID) && (!convertTokToID(this.tok, this.strictMode))) {
                     this.reportParseError("Expected identifier in variable declaration");
                     if (this.errorRecovery) {
-                        varDecl = new VarDecl(new MissingIdentifier(), this.nestingLevel);
+                        varDecl = new LocalDecl(new MissingIdentifier(), this.nestingLevel);
                         varDecl.minChar = minChar;
                         this.skip(errorRecoverySet);
                         varDecl.flags |= ASTFlags.Error;
@@ -2622,21 +2622,21 @@ module TypeScript {
                     this.tok = this.scanner.scan();
                     ast.minChar = minChar;
                     break;
-                case TokenID.NULL:
+                case TokenID.NIL:
                     ast = new AST(NodeType.Null);
                     this.tok = this.scanner.scan();
                     ast.minChar = minChar;
                     break;
-                case TokenID.ELSEIF:
-                    minChar = this.scanner.pos;
-                    this.tok = this.scanner.scan();
-                    ast = new CallExpression(NodeType.New, this.parseTerm(errorRecoverySet, false,
-                                                                  TypeContext.AllSimpleTypes, inCast),
-                                           null);
-                    ast.minChar = minChar;
-                    limChar = this.scanner.lastTokenLimChar();
-                    inNew = true;
-                    break;
+                //case TokenID.ELSEIF:
+                //    minChar = this.scanner.pos;
+                //    this.tok = this.scanner.scan();
+                //    ast = new CallExpression(NodeType.New, this.parseTerm(errorRecoverySet, false,
+                //                                                  TypeContext.AllSimpleTypes, inCast),
+                //                           null);
+                //    ast.minChar = minChar;
+                //    limChar = this.scanner.lastTokenLimChar();
+                //    inNew = true;
+                //    break;
                 case TokenID.FUNCTION:
                     minChar = this.scanner.pos;
                     ast = this.parseFncDecl(errorRecoverySet, false, false, false, null, false, false, false, Modifiers.None, null, true);

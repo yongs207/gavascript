@@ -120,7 +120,7 @@ module TypeScript {
 
             return (this.ast().nodeType === TypeScript.NodeType.Name) &&
                 (this.parent().nodeType === TypeScript.NodeType.VarDecl) &&
-                ((<TypeScript.VarDecl>this.parent()).id === this.ast());
+                ((<TypeScript.LocalDecl>this.parent()).id === this.ast());
         }
 
         public isNameOfModule(): bool {

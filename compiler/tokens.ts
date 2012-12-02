@@ -38,7 +38,7 @@ module TypeScript {
         MODULE,
         ELSEIF,
         NUMBER,
-        NULL,
+        NIL,
         PACKAGE,
         PRIVATE,
         PROTECTED,
@@ -230,7 +230,7 @@ module TypeScript {
     setTokenInfo(TokenID.MODULE, Reservation.TypeScript, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "module", ErrorRecoverySet.TypeScriptS);
     //setTokenInfo(TokenID.ELSEIF, Reservation.TypeScriptAndJS, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "new", ErrorRecoverySet.PreOp);
     setTokenInfo(TokenID.NUMBER, Reservation.TypeScript, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "number", ErrorRecoverySet.PrimType);
-    setTokenInfo(TokenID.NULL, Reservation.TypeScriptAndJS, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "nil", ErrorRecoverySet.RLit);
+    setTokenInfo(TokenID.NIL, Reservation.TypeScriptAndJS, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "nil", ErrorRecoverySet.RLit);
     setTokenInfo(TokenID.PACKAGE, Reservation.JavascriptFutureStrict, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "package", ErrorRecoverySet.None);
     setTokenInfo(TokenID.PRIVATE, Reservation.TypeScriptAndJSFutureStrict, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "private", ErrorRecoverySet.TypeScriptS);
     setTokenInfo(TokenID.PROTECTED, Reservation.JavascriptFutureStrict, OperatorPrecedence.No, NodeType.None, OperatorPrecedence.No, NodeType.None, "protected", ErrorRecoverySet.None);

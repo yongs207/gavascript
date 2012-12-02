@@ -1,4 +1,11 @@
+
+
+
 declare function print(a);
+
+local i:number = 5
+local a:number,b 
+local c,d,e = 1,"a"
 
 function afun() 
 	local i,b
@@ -27,9 +34,14 @@ end
 
 
  class Parent 
-	
+	private id:number;
+	public name:string;
+	constructor(id:number)
+	end
+
 	public say()
-		print("say")
+		print(self.name)
+		print(self.id)
 	end
 
 	private  test()
@@ -42,7 +54,7 @@ end
 
 class Child extends Parent
 	constructor (public field:string,public date:number)
-		supper()
+		super(2)
 	end
 
 	public  say()
@@ -65,6 +77,11 @@ function afun2()
 	end
 end
 
+local ifa;
+if ifa==nil then
+  print(a)
+end
+
 if 1+1==2 and 1+2>=3 then print("true")
 elseif 1+2~=3 then print("true")
 else print("false") end
@@ -73,9 +90,7 @@ repeat print("Hello") until 1+1~=2
 
 while 1+1~=2 do print("true") end
 
-local i:number = 5
-local a:number,b
-local c,d,e = 1,"a"
+
 
 
 -- conment d
