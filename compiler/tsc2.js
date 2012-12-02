@@ -4340,7 +4340,7 @@ var TypeScript;
         };
         Emitter.prototype.defaultValue = function (type) {
             if(type == this.checker.anyType) {
-                return "undefined";
+                return "nil";
             } else {
                 if(type == this.checker.numberType) {
                     return "0";
@@ -4351,7 +4351,7 @@ var TypeScript;
                         if(type == this.checker.booleanType) {
                             return "false";
                         } else {
-                            return "null";
+                            return "nil";
                         }
                     }
                 }
@@ -4394,7 +4394,7 @@ var TypeScript;
             }
             this.recordSourceMappingEnd(classDecl);
         };
-        Emitter.prototype.emitInnerFunction = function (funcDecl, printName, isProtoMember, bases, hasSelfRef, classDecl) {
+        Emitter.prototype.emitInnerFunction = function (funcDecl, printName, isProtoMember, bases, hasSelfRef, classDecl, className) {
             var isClassConstructor = funcDecl.isConstructor && TypeScript.hasFlag(funcDecl.fncFlags, TypeScript.FncFlags.ClassMethod);
             var hasNonObjectBaseType = isClassConstructor && TypeScript.hasFlag(this.thisClassNode.type.instanceType.typeFlags, TypeScript.TypeFlags.HasBaseType) && !TypeScript.hasFlag(this.thisClassNode.type.instanceType.typeFlags, TypeScript.TypeFlags.HasBaseTypeOfObject);
             var classPropertiesMustComeAfterSuperCall = hasNonObjectBaseType && TypeScript.hasFlag((this.thisClassNode).varFlags, TypeScript.VarFlags.ClassSuperMustBeFirstCallInConstructor);
@@ -4403,13 +4403,21 @@ var TypeScript;
             if(!(funcDecl.isAccessor() && (funcDecl.accessorSymbol).isObjectLitField)) {
                 this.writeToOutput("function ");
             }
+            if(isClassConstructor) {
+                funcDecl.name.actualText = "initialize";
+                className = classDecl.name.text;
+            }
             if(printName) {
                 var id = funcDecl.getNameText();
                 if(id && !funcDecl.isAccessor()) {
                     if(funcDecl.name) {
                         this.recordSourceMappingStart(funcDecl.name);
                     }
-                    this.writeToOutput(id);
+                    if(className) {
+                        this.writeToOutput(className + ":" + id);
+                    } else {
+                        this.writeToOutput(id);
+                    }
                     if(funcDecl.name) {
                         this.recordSourceMappingEnd(funcDecl.name);
                     }
@@ -4441,9 +4449,17 @@ var TypeScript;
             }
             this.writeLineToOutput(") ");
             if(funcDecl.isConstructor) {
-                this.recordSourceMappingNameStart("constructor");
+                this.recordSourceMappingNameStart("initialize");
             } else {
-                this.recordSourceMappingNameStart(funcDecl.getNameText());
+                if(funcDecl.isGetAccessor()) {
+                    this.recordSourceMappingNameStart("get_" + funcDecl.getNameText());
+                } else {
+                    if(funcDecl.isSetAccessor()) {
+                        this.recordSourceMappingNameStart("set_" + funcDecl.getNameText());
+                    } else {
+                        this.recordSourceMappingNameStart(funcDecl.getNameText());
+                    }
+                }
             }
             this.indenter.increaseIndent();
             for(i = 0; i < defaultArgs.length; i++) {
@@ -4567,7 +4583,7 @@ var TypeScript;
                     } else {
                         this.recordSourceMappingStart(innerFunc);
                         this.writeToOutput(funcName + "." + innerFunc.name.actualText + " = ");
-                        this.emitInnerFunction(innerFunc, (innerFunc.name && !innerFunc.name.isMissing()), false, null, innerFunc.hasSelfReference(), null);
+                        this.emitInnerFunction(innerFunc, (innerFunc.name && !innerFunc.name.isMissing()), false, null, innerFunc.hasSelfReference(), null, null);
                     }
                 }
                 if(funcDecl.statics) {
@@ -4613,7 +4629,7 @@ var TypeScript;
                 this.moduleName = moduleDecl.name.actualText;
                 if(isDynamicMod) {
                     var tsModFileName = TypeScript.stripQuotes(moduleDecl.name.actualText);
-                    var modFilePath = TypeScript.trimModName(tsModFileName) + ".js";
+                    var modFilePath = TypeScript.trimModName(tsModFileName) + ".lua";
                     if(this.emitOptions.createFile) {
                         if(TypeScript.switchToForwardSlashes(modFilePath) != TypeScript.switchToForwardSlashes(this.emitOptions.path)) {
                             var useUTF8InOutputfile = moduleDecl.containsUnicodeChar || (this.emitOptions.emitComments && moduleDecl.containsUnicodeCharInComment);
@@ -4657,27 +4673,18 @@ var TypeScript;
                 } else {
                     if(!isExported) {
                         this.recordSourceMappingStart(moduleDecl);
-                        this.writeToOutput("var ");
+                        this.writeToOutput("local ");
                         this.recordSourceMappingStart(moduleDecl.name);
                         this.writeToOutput(this.moduleName);
                         this.recordSourceMappingEnd(moduleDecl.name);
-                        this.writeLineToOutput(";");
+                        this.writeLineToOutput("= {};");
                         this.recordSourceMappingEnd(moduleDecl);
-                        this.emitIndent();
                     }
-                    this.writeToOutput("(");
-                    this.recordSourceMappingStart(moduleDecl);
-                    this.writeToOutput("function (");
-                    this.recordSourceMappingStart(moduleDecl.name);
-                    this.writeToOutput(this.moduleName);
-                    this.recordSourceMappingEnd(moduleDecl.name);
-                    this.writeLineToOutput(") {");
                 }
                 if(!isWholeFile) {
                     this.recordSourceMappingNameStart(this.moduleName);
                 }
                 if(!isDynamicMod || TypeScript.moduleGenTarget == TypeScript.ModuleGenTarget.Asynchronous) {
-                    this.indenter.increaseIndent();
                 }
                 if(moduleDecl.modFlags & TypeScript.ModuleFlags.MustCaptureThis) {
                     this.writeCaptureThisStatement(moduleDecl);
@@ -4720,31 +4727,27 @@ var TypeScript;
                             this.recordSourceMappingNameEnd();
                         }
                         this.recordSourceMappingEnd(moduleDecl.endingToken);
-                        this.writeLineToOutput(")(this." + this.moduleName + " || (this." + this.moduleName + " = {}));");
+                        this.writeLineToOutput(")(self." + this.moduleName + " || (self." + this.moduleName + " = {}));");
                     } else {
                         if(isExported || temp == EmitContainer.Prog) {
                             var dotMod = svModuleName != "" ? (parentIsDynamic ? "exports" : svModuleName) + "." : svModuleName;
-                            this.writeToOutput("}");
                             if(!isWholeFile) {
                                 this.recordSourceMappingNameEnd();
                             }
                             this.recordSourceMappingEnd(moduleDecl.endingToken);
-                            this.writeLineToOutput(")(" + dotMod + this.moduleName + " || (" + dotMod + this.moduleName + " = {}));");
+                            this.writeLineToOutput("return " + dotMod + this.moduleName);
                         } else {
                             if(!isExported && temp != EmitContainer.Prog) {
-                                this.writeToOutput("}");
                                 if(!isWholeFile) {
                                     this.recordSourceMappingNameEnd();
                                 }
                                 this.recordSourceMappingEnd(moduleDecl.endingToken);
-                                this.writeLineToOutput(")(" + this.moduleName + " || (" + this.moduleName + " = {}));");
+                                this.writeLineToOutput("return " + this.moduleName);
                             } else {
-                                this.writeToOutput("}");
                                 if(!isWholeFile) {
                                     this.recordSourceMappingNameEnd();
                                 }
                                 this.recordSourceMappingEnd(moduleDecl.endingToken);
-                                this.writeLineToOutput(")();");
                             }
                         }
                     }
@@ -4753,9 +4756,9 @@ var TypeScript;
                         this.emitIndent();
                         this.recordSourceMappingStart(moduleDecl);
                         if(parentIsDynamic) {
-                            this.writeLineToOutput("var " + this.moduleName + " = exports." + this.moduleName + ";");
+                            this.writeLineToOutput("local " + this.moduleName + " = exports." + this.moduleName + ";");
                         } else {
-                            this.writeLineToOutput("var " + this.moduleName + " = " + svModuleName + "." + this.moduleName + ";");
+                            this.writeLineToOutput("local " + this.moduleName + " = " + svModuleName + "." + this.moduleName + ";");
                         }
                         this.recordSourceMappingEnd(moduleDecl);
                     }
@@ -4800,9 +4803,9 @@ var TypeScript;
                 this.recordSourceMappingStart(funcDecl);
                 if(TypeScript.hasFlag(funcDecl.fncFlags, TypeScript.FncFlags.Exported | TypeScript.FncFlags.ClassPropertyMethodExported) && funcDecl.type.symbol.container == this.checker.gloMod && !funcDecl.isConstructor) {
                     this.writeToOutput("self." + funcName + " = ");
-                    this.emitInnerFunction(funcDecl, false, false, bases, hasSelfRef, this.thisClassNode);
+                    this.emitInnerFunction(funcDecl, false, false, bases, hasSelfRef, this.thisClassNode, null);
                 } else {
-                    this.emitInnerFunction(funcDecl, (funcDecl.name && !funcDecl.name.isMissing()), false, bases, hasSelfRef, this.thisClassNode);
+                    this.emitInnerFunction(funcDecl, (funcDecl.name && !funcDecl.name.isMissing()), false, bases, hasSelfRef, this.thisClassNode, null);
                 }
                 this.setInObjectLiteral(tempLit);
             }
@@ -5139,7 +5142,6 @@ var TypeScript;
                 return;
             } else {
                 if(ast.nodeType != TypeScript.NodeType.List) {
-                    this.emitPrologue(emitPrologue);
                     this.emitJavascript(ast, tokenId, startLine);
                 } else {
                     var list = ast;
@@ -5151,7 +5153,6 @@ var TypeScript;
                     for(var i = 0; i < len; i++) {
                         if(emitPrologue) {
                             if(i == 1 || !TypeScript.hasFlag(list.flags, TypeScript.ASTFlags.StrictMode)) {
-                                this.emitPrologue(requiresInherit);
                                 emitPrologue = false;
                             }
                         }
@@ -5243,7 +5244,7 @@ var TypeScript;
                     this.emitIndent();
                     this.recordSourceMappingStart(getter);
                     this.writeToOutput("get: ");
-                    this.emitInnerFunction(getter, false, isProto, null, funcDecl.hasSelfReference(), null);
+                    this.emitInnerFunction(getter, false, isProto, null, funcDecl.hasSelfReference(), null, className);
                     this.writeLineToOutput(",");
                 }
                 if(accessorSymbol.setter) {
@@ -5251,7 +5252,7 @@ var TypeScript;
                     this.emitIndent();
                     this.recordSourceMappingStart(setter);
                     this.writeToOutput("set: ");
-                    this.emitInnerFunction(setter, false, isProto, null, funcDecl.hasSelfReference(), null);
+                    this.emitInnerFunction(setter, false, isProto, null, funcDecl.hasSelfReference(), null, className);
                     this.writeLineToOutput(",");
                 }
                 this.emitIndent();
@@ -5273,9 +5274,8 @@ var TypeScript;
                 } else {
                     this.emitIndent();
                     this.recordSourceMappingStart(funcDecl);
-                    this.writeToOutput(className + ".prototype." + funcDecl.getNameText() + " = ");
-                    this.emitInnerFunction(funcDecl, false, true, null, funcDecl.hasSelfReference(), null);
-                    this.writeLineToOutput(";");
+                    this.emitInnerFunction(funcDecl, true, true, null, funcDecl.hasSelfReference(), null, className);
+                    this.writeLineToOutput("");
                 }
             } else {
                 if(member.nodeType == TypeScript.NodeType.VarDecl) {
@@ -5284,7 +5284,7 @@ var TypeScript;
                         this.emitIndent();
                         this.recordSourceMappingStart(varDecl);
                         this.recordSourceMappingStart(varDecl.id);
-                        this.writeToOutput(className + ".prototype." + varDecl.id.actualText);
+                        this.writeToOutput(className + "." + varDecl.id.actualText);
                         this.recordSourceMappingEnd(varDecl.id);
                         this.writeToOutput(" = ");
                         this.emitJavascript(varDecl.init, TypeScript.TokenID.Asg, false);
@@ -5326,9 +5326,9 @@ var TypeScript;
                 var temp = this.setContainer(EmitContainer.Class);
                 this.recordSourceMappingStart(classDecl);
                 if(TypeScript.hasFlag(classDecl.varFlags, TypeScript.VarFlags.Exported) && classDecl.type.symbol.container == this.checker.gloMod) {
-                    this.writeToOutput("this." + className);
+                    this.writeToOutput("self." + className);
                 } else {
-                    this.writeToOutput("var " + className);
+                    this.writeToOutput("local " + className);
                 }
                 var _class = classDecl.type;
                 var instanceType = _class.instanceType;
@@ -5336,17 +5336,16 @@ var TypeScript;
                 var baseNameDecl = null;
                 var baseName = null;
                 if(baseClass) {
-                    this.writeLineToOutput(" = (function (_super) {");
-                } else {
-                    this.writeLineToOutput(" = (function () {");
-                }
-                this.recordSourceMappingNameStart(className);
-                this.indenter.increaseIndent();
-                if(baseClass) {
                     baseNameDecl = classDecl.extendsList.members[0];
                     baseName = baseNameDecl.nodeType == TypeScript.NodeType.Call ? (baseNameDecl).target : baseNameDecl;
-                    this.emitIndent();
-                    this.writeLineToOutput("__extends(" + className + ", _super);");
+                    this.writeToOutput(" = ");
+                    this.emitJavascript(baseName, TypeScript.TokenID.Tilde, false);
+                    this.writeLineToOutput(":extend()");
+                } else {
+                    this.writeLineToOutput(" = Object:extend()");
+                }
+                this.recordSourceMappingNameStart(className);
+                if(baseClass) {
                     var elen = instanceType.extendsList.length;
                     if(elen > 1) {
                         for(var i = 1; i < elen; i++) {
@@ -5362,14 +5361,9 @@ var TypeScript;
                 } else {
                     var wroteProps = 0;
                     this.recordSourceMappingStart(classDecl);
-                    this.indenter.increaseIndent();
-                    this.writeToOutput("function " + classDecl.name.actualText + "() {");
-                    this.recordSourceMappingNameStart("constructor");
+                    this.writeToOutput("function " + classDecl.name.actualText + ":initialize() ");
+                    this.recordSourceMappingNameStart("initialize");
                     if(baseClass) {
-                        this.writeLineToOutput("");
-                        this.emitIndent();
-                        this.writeLineToOutput("_super.apply(this, arguments);");
-                        wroteProps++;
                     }
                     if(classDecl.varFlags & TypeScript.VarFlags.MustCaptureThis) {
                         this.writeCaptureThisStatement(classDecl);
@@ -5390,9 +5384,9 @@ var TypeScript;
                         this.writeLineToOutput("");
                         this.indenter.decreaseIndent();
                         this.emitIndent();
-                        this.writeLineToOutput("}");
+                        this.writeLineToOutput("end");
                     } else {
-                        this.writeLineToOutput(" }");
+                        this.writeLineToOutput(" end");
                         this.indenter.decreaseIndent();
                     }
                     this.recordSourceMappingNameEnd();
@@ -5413,7 +5407,7 @@ var TypeScript;
                                     this.emitIndent();
                                     this.recordSourceMappingStart(fn);
                                     this.writeToOutput(classDecl.name.actualText + "." + fn.name.actualText + " = ");
-                                    this.emitInnerFunction(fn, (fn.name && !fn.name.isMissing()), false, null, fn.hasSelfReference(), null);
+                                    this.emitInnerFunction(fn, (fn.name && !fn.name.isMissing()), false, null, fn.hasSelfReference(), null, className);
                                 }
                             }
                         }
@@ -5437,23 +5431,6 @@ var TypeScript;
                         }
                     }
                 }
-                this.emitIndent();
-                this.recordSourceMappingStart(classDecl.endingToken);
-                this.writeLineToOutput("return " + className + ";");
-                this.recordSourceMappingEnd(classDecl.endingToken);
-                this.indenter.decreaseIndent();
-                this.emitIndent();
-                this.recordSourceMappingStart(classDecl.endingToken);
-                this.writeToOutput("}");
-                this.recordSourceMappingNameEnd();
-                this.recordSourceMappingEnd(classDecl.endingToken);
-                this.recordSourceMappingStart(classDecl);
-                this.writeToOutput(")(");
-                if(baseClass) {
-                    this.emitJavascript(baseName, TypeScript.TokenID.Tilde, false);
-                }
-                this.writeToOutput(");");
-                this.recordSourceMappingEnd(classDecl);
                 if((temp == EmitContainer.Module || temp == EmitContainer.DynamicModule) && TypeScript.hasFlag(classDecl.varFlags, TypeScript.VarFlags.Exported)) {
                     this.writeLineToOutput("");
                     this.emitIndent();
@@ -5467,21 +5444,6 @@ var TypeScript;
                 this.emitParensAndCommentsInPlace(classDecl, false);
                 this.setContainer(temp);
                 this.thisClassNode = svClassNode;
-            }
-        };
-        Emitter.prototype.emitPrologue = function (reqInherits) {
-            if(!this.prologueEmitted) {
-                if(reqInherits) {
-                    this.prologueEmitted = true;
-                    this.writeLineToOutput("var __extends = this.__extends || function (d, b) {");
-                    this.writeLineToOutput("    function __() { this.constructor = d; }");
-                    this.writeLineToOutput("    __.prototype = b.prototype;");
-                    this.writeLineToOutput("    d.prototype = new __();");
-                    this.writeLineToOutput("};");
-                }
-                if(this.checker.mustCaptureGlobalThis) {
-                    this.writeLineToOutput(this.captureThisStmtString);
-                }
             }
         };
         Emitter.prototype.emitSuperReference = function () {

@@ -1,6 +1,6 @@
 declare function print(a);
 
 interface Object 
-	new();
-	extend();
+	new()
+	extend()
 end

@@ -13,7 +13,7 @@ end
 
 
 
-module M
+export module M
 
 export enum Token
 	ID,
