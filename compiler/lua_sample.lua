@@ -1,7 +1,11 @@
 local i = 5
 local a, b
 local c, d, e = 1, "a"
-function afun() 
+local function cfun() 
+end
+function CFF.bfun() 
+end
+local function Mss:afun() 
     local i, b
     for i = 1, 10, 2 do 
         print(i);
@@ -9,21 +13,12 @@ function afun()
     end 
 end
 local M= {};
-Token._map
-Token._map[0] = "ID";
-Token.ID
-Token._map[1] = "Param";
-Token.Param
-Token._map[2] = "Oper";
-Token.Oper
-return M.Token
-local Token = M.Token;
 local Parent = Object:extend()
 function Parent:initialize(id) 
 end
 function Parent:say() 
-print(self.name);
-print(self.id);
+    print(self.name);
+    print(self.id);
 end
 function Parent:test() 
 end
@@ -33,38 +28,38 @@ end
 M.Parent = Parent;
 local Child = Parent:extend()
 function Child:initialize(field, date) 
-_super.call(this, 2);
-self.field = field;
-self.date = date;
+    _super.call(this, 2);
+    self.field = field;
+    self.date = date;
 end
 function Child:say() 
-print("say");
+    print("say");
 end
 function Child:test() 
 end
 
-return M
+return M;
 1 + 2 ~= 3;
 function afun2() 
-for i = 1, 10, 2 do 
-print(i);
-print(i);
-end 
+    for i = 1, 10, 2 do 
+        print(i);
+        print(i);
+    end 
 end
 local ifa
 if ifa == nil then 
-print(a);
+    print(a);
 end
 if 1 + 1 == 2 and 1 + 2 >= 3 then 
-print("true");
+    print("true");
 elseif 1 + 2 ~= 3 then 
-print("true");
+    print("true");
 else 
-print("false");
+    print("false");
 end
 repeat 
-print("Hello");
+    print("Hello");
 until 1 + 1 ~= 2
 while 1 + 1 ~= 2 do 
-print("true");
+    print("true");
 end 

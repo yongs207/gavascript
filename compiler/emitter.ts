@@ -404,6 +404,12 @@ module TypeScript {
                     if (className) {
                         this.writeToOutput(className+":"+id);
                     } else {
+                        if (funcDecl.prefixNames != null) {
+                            for (var i = 0; i < funcDecl.prefixNames.members.length; i++) {
+                                this.writeToOutput((<Identifier>funcDecl.prefixNames.members[i]).actualText);
+                                this.writeToOutput(funcDecl.prefixToks[i].getText());
+                            }
+                        }
                         this.writeToOutput(id);
                     }
                     if (funcDecl.name) {
@@ -454,7 +460,7 @@ module TypeScript {
                 var arg = defaultArgs[i];
                 this.emitIndent();
                 this.recordSourceMappingStart(arg);
-                this.writeToOutput("if (typeof " + arg.id.actualText + " === \"undefined\") then ");//
+                this.writeToOutput("if (type( " + arg.id.actualText + ") == \"nil\") then ");//
                 this.recordSourceMappingStart(arg.id);
                 this.writeToOutput(arg.id.actualText);
                 this.recordSourceMappingEnd(arg.id);
@@ -572,6 +578,7 @@ module TypeScript {
             }
 
             // Emit the function's statics
+            //TODO:update static function
             if (funcDecl.hasStaticDeclarations()) {
                 this.writeLineToOutput("");
                 this.emitIndent();
@@ -724,7 +731,7 @@ module TypeScript {
                         this.recordSourceMappingEnd(moduleDecl.name);
                         this.writeLineToOutput("= {};");
                         this.recordSourceMappingEnd(moduleDecl);
-                        //this.emitIndent();
+                        this.emitIndent();
                     }
 
                     //this.writeToOutput("(");
@@ -751,7 +758,7 @@ module TypeScript {
 
                 this.emitJavascriptList(moduleDecl.members, null, TokenID.SColon, true, false, false);
                 if (!isDynamicMod || moduleGenTarget == ModuleGenTarget.Asynchronous) {
-                    this.indenter.decreaseIndent();
+                    //this.indenter.decreaseIndent();
                 }
                 this.emitIndent();
 
@@ -889,8 +896,12 @@ module TypeScript {
                     this.writeToOutput("self." + funcName + " = ");
                     this.emitInnerFunction(funcDecl, false, false, bases, hasSelfRef, this.thisClassNode,null);
                 }
+                else if (hasFlag(funcDecl.fncFlags, FncFlags.Exported | FncFlags.LocalFunction)&&!funcDecl.isConstructor) {
+                    this.writeToOutput("local ");
+                    this.emitInnerFunction(funcDecl, (funcDecl.name && !funcDecl.name.isMissing()), false, bases, hasSelfRef, this.thisClassNode, null);
+                }
                 else {
-                    this.emitInnerFunction(funcDecl, (funcDecl.name && !funcDecl.name.isMissing()), false, bases, hasSelfRef, this.thisClassNode,null);
+                    this.emitInnerFunction(funcDecl, (funcDecl.name && !funcDecl.name.isMissing()), false, bases, hasSelfRef, this.thisClassNode, null);
                 }
                 this.setInObjectLiteral(tempLit);
             }
@@ -1424,7 +1435,7 @@ module TypeScript {
                 this.writeToOutput(";");
             }
         }
-
+        //TODO:update
         public emitPropertyAccessor(funcDecl: FuncDecl, className: string, isProto: bool) {
             if (!(<FieldSymbol>funcDecl.accessorSymbol).hasBeenEmitted) {
                 var accessorSymbol = <FieldSymbol>funcDecl.accessorSymbol;

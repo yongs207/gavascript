@@ -1488,6 +1488,8 @@ module TypeScript {
             return binex;
         }
 
+
+
         public typeCheckBooleanOperator(ast: AST): AST {
             var binex = <BinaryExpression>ast;
             binex.operand1 = this.typeCheck(binex.operand1);

@@ -25,6 +25,7 @@ module TypeScript {
         Await,
         In,
         Dot,
+        Colon,
         From,
         Is,
         InstOf,
@@ -36,6 +37,7 @@ module TypeScript {
         Call,
         New,
         Asg,
+        
         //AsgAdd,
         //AsgSub,
         //AsgDiv,

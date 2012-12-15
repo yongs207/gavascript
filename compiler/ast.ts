@@ -558,6 +558,8 @@ module TypeScript {
             switch (this.nty) {
                 case NodeType.Dot:
                     return typeFlow.typeCheckDotOperator(this);
+                case NodeType.Colon:
+                    return typeFlow.typeCheckDotOperator(this);//TODO:colon type check
                 case NodeType.Asg:
                     return typeFlow.typeCheckAsgOperator(this);
                 case NodeType.Add:
@@ -970,6 +972,8 @@ module TypeScript {
         public classDecl: Record = null;
         public boundToProperty: LocalDecl = null;
         public isOverload = false;
+        public prefixNames: ASTList=null;
+        public prefixToks:Token[];
         public innerStaticFuncs: FuncDecl[] = [];
         public isTargetTypedAsMethod = false;
         public isInlineCallLiteral = false;

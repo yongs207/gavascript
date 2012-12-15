@@ -111,6 +111,7 @@ module TypeScript {
             this.childrenWalkers[NodeType.Await] = ChildrenWalkers.walkUnaryExpressionChildren;
             this.childrenWalkers[NodeType.In] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[NodeType.Dot] = ChildrenWalkers.walkBinaryExpressionChildren;
+            this.childrenWalkers[NodeType.Colon] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[NodeType.From] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[NodeType.Is] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[NodeType.InstOf] = ChildrenWalkers.walkBinaryExpressionChildren;

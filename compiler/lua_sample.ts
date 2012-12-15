@@ -3,7 +3,13 @@ local i:number = 5
 local a:number,b 
 local c,d,e = 1,"a"
 
-function afun() 
+local function cfun()
+end
+
+function CFF.bfun()
+end
+
+local function Mss:afun() 
 	local i,b
 	for i = 1, 10, 2 do 
 	  print(i)
@@ -13,13 +19,14 @@ end
 
 
 
+
 module M
 
-export enum Token
-	ID,
-	Param,
-	Oper
-end
+--export enum Token
+--	ID,
+--	Param,
+--	Oper
+--end
  
  
  interface IPerson
