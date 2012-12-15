@@ -37,7 +37,7 @@ module TypeScript {
         Call,
         New,
         Asg,
-        
+        SignalObj,
         //AsgAdd,
         //AsgSub,
         //AsgDiv,

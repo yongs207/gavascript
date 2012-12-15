@@ -3035,84 +3035,89 @@ module TypeScript {
 
             if (memberDecls) {
                 for (var i = 0, len = memberDecls.members.length; i < len; i++) {
+                    if (memberDecls.members[i] instanceof BinaryExpression) {//add typecheck for UnaryExpression
+                        var binex = <BinaryExpression>memberDecls.members[i];
 
-                    var binex = <BinaryExpression>memberDecls.members[i];
+                        var id = binex.operand1;
+                        var text: string;
+                        var targetMember: Symbol = null;
+                        var fieldSymbol: FieldSymbol = null;
 
-                    var id = binex.operand1;
-                    var text: string;
-                    var targetMember: Symbol = null;
-                    var fieldSymbol: FieldSymbol = null;
-
-                    if (id.nodeType == NodeType.Name) {
-                        text = (<Identifier>id).text;
-                    }
-                    else if (id.nodeType == NodeType.QString) {
-                        // TODO: set text to unescaped string
-                        var idText = (<StringLiteral>id).text;
-                        text = idText.substring(1, idText.length - 1);
-                    }
-                    else {
-                        this.checker.errorReporter.simpleError(objectLit,
-                                                          "malformed object literal");
-                        resultType = this.anyType;
-                        break;
-                    }
-
-                    if (acceptTargetType && targetType.memberScope) {
-                        targetMember = targetType.memberScope.find(text, false, false);
-                    }
-
-                    // before typechecking an accessor function member, we need to initialize its accessor symbol
-                    if (binex.operand2.nodeType == NodeType.FuncDecl && (<FuncDecl>binex.operand2).isAccessor()) {
-
-                        var funcDecl = <FuncDecl>binex.operand2;
-                        var accessorSym: FieldSymbol = resultType.members.publicMembers.lookup(text);
-
-                        accessorSym = this.checker.createAccessorSymbol(funcDecl, accessorSym, resultType, true, false, resultType.memberScope, null);
-                        funcDecl.accessorSymbol = accessorSym;
-                        fieldSymbol = accessorSym;
                         if (id.nodeType == NodeType.Name) {
-                            (<Identifier>id).sym = accessorSym;
+                            text = (<Identifier>id).text;
                         }
-                    }
-
-                    this.checker.typeCheckWithContextualType(acceptTargetType && targetMember ? targetMember.getType() : null, false, acceptTargetType, binex.operand2);
-
-                    if (acceptTargetType && targetMember) {
-                        // Note that we accept 'any' in place of a valid subtype                     
-                        if ((binex.operand2.type == this.anyType || this.checker.sourceIsAssignableToTarget(binex.operand2.type, targetMember.getType())) ||
-                            (binex.operand2.nodeType == NodeType.FuncDecl &&
-                            (<FuncDecl>binex.operand2).isAccessor() &&
-                                this.typeFromAccessorFuncDecl(<FuncDecl>binex.operand2) == targetMember.getType())) {
-                                    // set the field type to the proper contextual type
-                                    // this is especially important in the 'any' case, so that
-                                    // fields typed to 'any' aren't accepted for contextual typing,
-                                    // but never properly set to the target type
-                            binex.operand1.type = targetMember.getType();
+                        else if (id.nodeType == NodeType.QString) {
+                            // TODO: set text to unescaped string
+                            var idText = (<StringLiteral>id).text;
+                            text = idText.substring(1, idText.length - 1);
                         }
-                    }
-                    else {
-                        // here we sub in 'any' for 'undefined' to account for field initialization to
-                        // 'undefined'  
-                        binex.operand2.type = binex.operand2.type == this.checker.undefinedType ? this.anyType : binex.operand2.type;
+                        else {
+                            this.checker.errorReporter.simpleError(objectLit,
+                                                              "malformed object literal");
+                            resultType = this.anyType;
+                            break;
+                        }
+
+                        if (acceptTargetType && targetType.memberScope) {
+                            targetMember = targetType.memberScope.find(text, false, false);
+                        }
+
+                        // before typechecking an accessor function member, we need to initialize its accessor symbol
+                        if (binex.operand2.nodeType == NodeType.FuncDecl && (<FuncDecl>binex.operand2).isAccessor()) {
+
+                            var funcDecl = <FuncDecl>binex.operand2;
+                            var accessorSym: FieldSymbol = resultType.members.publicMembers.lookup(text);
+
+                            accessorSym = this.checker.createAccessorSymbol(funcDecl, accessorSym, resultType, true, false, resultType.memberScope, null);
+                            funcDecl.accessorSymbol = accessorSym;
+                            fieldSymbol = accessorSym;
+                            if (id.nodeType == NodeType.Name) {
+                                (<Identifier>id).sym = accessorSym;
+                            }
+                        }
+
+                        this.checker.typeCheckWithContextualType(acceptTargetType && targetMember ? targetMember.getType() : null, false, acceptTargetType, binex.operand2);
+
+                        if (acceptTargetType && targetMember) {
+                            // Note that we accept 'any' in place of a valid subtype                     
+                            if ((binex.operand2.type == this.anyType || this.checker.sourceIsAssignableToTarget(binex.operand2.type, targetMember.getType())) ||
+                                (binex.operand2.nodeType == NodeType.FuncDecl &&
+                                (<FuncDecl>binex.operand2).isAccessor() &&
+                                    this.typeFromAccessorFuncDecl(<FuncDecl>binex.operand2) == targetMember.getType())) {
+                                        // set the field type to the proper contextual type
+                                        // this is especially important in the 'any' case, so that
+                                        // fields typed to 'any' aren't accepted for contextual typing,
+                                        // but never properly set to the target type
+                                binex.operand1.type = targetMember.getType();
+                            }
+                        }
+                        else {
+                            // here we sub in 'any' for 'undefined' to account for field initialization to
+                            // 'undefined'  
+                            binex.operand2.type = binex.operand2.type == this.checker.undefinedType ? this.anyType : binex.operand2.type;
+                        }
+
+                        // the field symbol hasn't been set by a getter or setter
+                        if (fieldSymbol == null) {
+                            var memberType = binex.operand2.type;
+                            var field = new ValueLocation();
+                            fieldSymbol =
+                                new FieldSymbol(text, id.minChar,
+                                                this.checker.locationInfo.unitIndex,
+                                                true, field);
+                            fieldSymbol.flags |= SymbolFlags.Property;
+                            field.symbol = fieldSymbol;
+                            fieldSymbol.typeCheckStatus = this.checker.getTypeCheckFinishedStatus();
+                            field.typeLink = new TypeLink();
+                            field.typeLink.type = memberType;
+                            resultType.members.publicMembers.add(text, fieldSymbol);
+                        }
+                        fieldSymbol.isObjectLitField = true;
+                    } else {
+                        //add type check later
+                        //var unaryex = <UnaryExpression>memberDecls.members[i];
                     }
 
-                    // the field symbol hasn't been set by a getter or setter
-                    if (fieldSymbol == null) {
-                        var memberType = binex.operand2.type;
-                        var field = new ValueLocation();
-                        fieldSymbol =
-                            new FieldSymbol(text, id.minChar,
-                                            this.checker.locationInfo.unitIndex,
-                                            true, field);
-                        fieldSymbol.flags |= SymbolFlags.Property;
-                        field.symbol = fieldSymbol;
-                        fieldSymbol.typeCheckStatus = this.checker.getTypeCheckFinishedStatus();
-                        field.typeLink = new TypeLink();
-                        field.typeLink.type = memberType;
-                        resultType.members.publicMembers.add(text, fieldSymbol);
-                    }
-                    fieldSymbol.isObjectLitField = true;
                 }
             }
 
@@ -3249,14 +3254,14 @@ module TypeScript {
                             returnStmt.type = returnStmt.returnExpression.type;
                         }
                         else {
-                            returnStmt.returnExpression = this.cast(returnStmt.returnExpression, expectedReturnType);
+                            returnStmt.returnExpression.members[0] = this.cast(returnStmt.returnExpression.members[0], expectedReturnType);
                             returnStmt.type = expectedReturnType;
                         }
                     }
                     else {
                         if (targetType) {
                             if (returnStmt.returnExpression.type != this.voidType) {
-                                returnStmt.returnExpression = this.cast(returnStmt.returnExpression, targetType);
+                                returnStmt.returnExpression.members[0] = this.cast(returnStmt.returnExpression.members[0], targetType);
                             }
                             else {
                                 returnStmt.returnExpression.type = targetType;

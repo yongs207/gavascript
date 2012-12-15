@@ -550,100 +550,102 @@ var TypeScript;
         NodeType.New = 30;
         NodeType._map[31] = "Asg";
         NodeType.Asg = 31;
-        NodeType._map[32] = "QMark";
-        NodeType.QMark = 32;
-        NodeType._map[33] = "LogOr";
-        NodeType.LogOr = 33;
-        NodeType._map[34] = "LogAnd";
-        NodeType.LogAnd = 34;
-        NodeType._map[35] = "Or";
-        NodeType.Or = 35;
-        NodeType._map[36] = "And";
-        NodeType.And = 36;
-        NodeType._map[37] = "Eq";
-        NodeType.Eq = 37;
-        NodeType._map[38] = "Ne";
-        NodeType.Ne = 38;
-        NodeType._map[39] = "Lt";
-        NodeType.Lt = 39;
-        NodeType._map[40] = "Le";
-        NodeType.Le = 40;
-        NodeType._map[41] = "Gt";
-        NodeType.Gt = 41;
-        NodeType._map[42] = "Ge";
-        NodeType.Ge = 42;
-        NodeType._map[43] = "Add";
-        NodeType.Add = 43;
-        NodeType._map[44] = "Sub";
-        NodeType.Sub = 44;
-        NodeType._map[45] = "Mul";
-        NodeType.Mul = 45;
-        NodeType._map[46] = "Div";
-        NodeType.Div = 46;
-        NodeType._map[47] = "Mod";
-        NodeType.Mod = 47;
-        NodeType._map[48] = "Not";
-        NodeType.Not = 48;
-        NodeType._map[49] = "LogNot";
-        NodeType.LogNot = 49;
-        NodeType._map[50] = "TypeAssertion";
-        NodeType.TypeAssertion = 50;
-        NodeType._map[51] = "FuncDecl";
-        NodeType.FuncDecl = 51;
-        NodeType._map[52] = "Member";
-        NodeType.Member = 52;
-        NodeType._map[53] = "VarDecl";
-        NodeType.VarDecl = 53;
-        NodeType._map[54] = "ArgDecl";
-        NodeType.ArgDecl = 54;
-        NodeType._map[55] = "Return";
-        NodeType.Return = 55;
-        NodeType._map[56] = "Break";
-        NodeType.Break = 56;
-        NodeType._map[57] = "Continue";
-        NodeType.Continue = 57;
-        NodeType._map[58] = "Throw";
-        NodeType.Throw = 58;
-        NodeType._map[59] = "For";
-        NodeType.For = 59;
-        NodeType._map[60] = "ForIn";
-        NodeType.ForIn = 60;
-        NodeType._map[61] = "If";
-        NodeType.If = 61;
-        NodeType._map[62] = "While";
-        NodeType.While = 62;
-        NodeType._map[63] = "Repeat";
-        NodeType.Repeat = 63;
-        NodeType._map[64] = "Block";
-        NodeType.Block = 64;
-        NodeType._map[65] = "List";
-        NodeType.List = 65;
-        NodeType._map[66] = "Script";
-        NodeType.Script = 66;
-        NodeType._map[67] = "Class";
-        NodeType.Class = 67;
-        NodeType._map[68] = "Interface";
-        NodeType.Interface = 68;
-        NodeType._map[69] = "Module";
-        NodeType.Module = 69;
-        NodeType._map[70] = "Import";
-        NodeType.Import = 70;
-        NodeType._map[71] = "Label";
-        NodeType.Label = 71;
-        NodeType._map[72] = "LabeledStatement";
-        NodeType.LabeledStatement = 72;
-        NodeType._map[73] = "EBStart";
-        NodeType.EBStart = 73;
-        NodeType._map[74] = "GotoEB";
-        NodeType.GotoEB = 74;
-        NodeType._map[75] = "EndCode";
-        NodeType.EndCode = 75;
-        NodeType._map[76] = "Error";
-        NodeType.Error = 76;
-        NodeType._map[77] = "Comment";
-        NodeType.Comment = 77;
-        NodeType._map[78] = "Debugger";
-        NodeType.Debugger = 78;
+        NodeType._map[32] = "SignalObj";
+        NodeType.SignalObj = 32;
+        NodeType._map[33] = "QMark";
+        NodeType.QMark = 33;
+        NodeType._map[34] = "LogOr";
+        NodeType.LogOr = 34;
+        NodeType._map[35] = "LogAnd";
+        NodeType.LogAnd = 35;
+        NodeType._map[36] = "Or";
+        NodeType.Or = 36;
+        NodeType._map[37] = "And";
+        NodeType.And = 37;
+        NodeType._map[38] = "Eq";
+        NodeType.Eq = 38;
+        NodeType._map[39] = "Ne";
+        NodeType.Ne = 39;
+        NodeType._map[40] = "Lt";
+        NodeType.Lt = 40;
+        NodeType._map[41] = "Le";
+        NodeType.Le = 41;
+        NodeType._map[42] = "Gt";
+        NodeType.Gt = 42;
+        NodeType._map[43] = "Ge";
+        NodeType.Ge = 43;
+        NodeType._map[44] = "Add";
+        NodeType.Add = 44;
+        NodeType._map[45] = "Sub";
+        NodeType.Sub = 45;
+        NodeType._map[46] = "Mul";
+        NodeType.Mul = 46;
+        NodeType._map[47] = "Div";
+        NodeType.Div = 47;
+        NodeType._map[48] = "Mod";
+        NodeType.Mod = 48;
+        NodeType._map[49] = "Not";
+        NodeType.Not = 49;
+        NodeType._map[50] = "LogNot";
+        NodeType.LogNot = 50;
+        NodeType._map[51] = "TypeAssertion";
+        NodeType.TypeAssertion = 51;
+        NodeType._map[52] = "FuncDecl";
+        NodeType.FuncDecl = 52;
+        NodeType._map[53] = "Member";
+        NodeType.Member = 53;
+        NodeType._map[54] = "VarDecl";
+        NodeType.VarDecl = 54;
+        NodeType._map[55] = "ArgDecl";
+        NodeType.ArgDecl = 55;
+        NodeType._map[56] = "Return";
+        NodeType.Return = 56;
+        NodeType._map[57] = "Break";
+        NodeType.Break = 57;
+        NodeType._map[58] = "Continue";
+        NodeType.Continue = 58;
+        NodeType._map[59] = "Throw";
+        NodeType.Throw = 59;
+        NodeType._map[60] = "For";
+        NodeType.For = 60;
+        NodeType._map[61] = "ForIn";
+        NodeType.ForIn = 61;
+        NodeType._map[62] = "If";
+        NodeType.If = 62;
+        NodeType._map[63] = "While";
+        NodeType.While = 63;
+        NodeType._map[64] = "Repeat";
+        NodeType.Repeat = 64;
+        NodeType._map[65] = "Block";
+        NodeType.Block = 65;
+        NodeType._map[66] = "List";
+        NodeType.List = 66;
+        NodeType._map[67] = "Script";
+        NodeType.Script = 67;
+        NodeType._map[68] = "Class";
+        NodeType.Class = 68;
+        NodeType._map[69] = "Interface";
+        NodeType.Interface = 69;
+        NodeType._map[70] = "Module";
+        NodeType.Module = 70;
+        NodeType._map[71] = "Import";
+        NodeType.Import = 71;
+        NodeType._map[72] = "Label";
+        NodeType.Label = 72;
+        NodeType._map[73] = "LabeledStatement";
+        NodeType.LabeledStatement = 73;
+        NodeType._map[74] = "EBStart";
+        NodeType.EBStart = 74;
+        NodeType._map[75] = "GotoEB";
+        NodeType.GotoEB = 75;
+        NodeType._map[76] = "EndCode";
+        NodeType.EndCode = 76;
+        NodeType._map[77] = "Error";
+        NodeType.Error = 77;
+        NodeType._map[78] = "Comment";
+        NodeType.Comment = 78;
+        NodeType._map[79] = "Debugger";
+        NodeType.Debugger = 79;
         NodeType.GeneralNode = NodeType.FuncDecl;
     })(TypeScript.NodeType || (TypeScript.NodeType = {}));
     var NodeType = TypeScript.NodeType;
@@ -1327,6 +1329,11 @@ var TypeScript;
             emitter.emitParensAndCommentsInPlace(this, true);
             emitter.recordSourceMappingStart(this);
             switch(this.nty) {
+                case TypeScript.NodeType.SignalObj: {
+                    emitter.emitJavascript(this.operand, TypeScript.TokenID.Tilde, false);
+                    break;
+
+                }
                 case TypeScript.NodeType.ObjectLit: {
                     emitter.emitObjectLiteral(this.operand);
                     break;
@@ -1528,6 +1535,15 @@ var TypeScript;
                         break;
 
                     }
+                    case TypeScript.NodeType.Colon: {
+                        if(!emitter.tryEmitConstant(this)) {
+                            emitter.emitJavascript(this.operand1, TypeScript.TokenID.Colon, false);
+                            emitter.writeToOutput(":");
+                            emitter.emitJavascriptName(this.operand2, false);
+                        }
+                        break;
+
+                    }
                     case TypeScript.NodeType.Index: {
                         emitter.emitIndex(this.operand1, this.operand2);
                         break;
@@ -1544,7 +1560,7 @@ var TypeScript;
                             emitter.emitJavascript(this.operand1, TypeScript.TokenID.Colon, false);
                         } else {
                             emitter.emitJavascript(this.operand1, TypeScript.TokenID.Colon, false);
-                            emitter.writeToOutputTrimmable(": ");
+                            emitter.writeToOutputTrimmable("= ");
                         }
                         emitter.emitJavascript(this.operand2, TypeScript.TokenID.Comma, false);
                         break;
@@ -2560,7 +2576,8 @@ var TypeScript;
             var temp = emitter.setInObjectLiteral(false);
             if(this.returnExpression) {
                 emitter.writeToOutput("return ");
-                emitter.emitJavascript(this.returnExpression, TypeScript.TokenID.SColon, false);
+                emitter.emitJavascriptList(this.returnExpression, ", ", TypeScript.TokenID.Comma, false, false, false);
+                emitter.writeToOutput(" ;");
             } else {
                 emitter.writeToOutput("return;");
             }
@@ -2968,6 +2985,7 @@ var TypeScript;
             this.childrenWalkers[TypeScript.NodeType.Call] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.New] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.Asg] = ChildrenWalkers.walkBinaryExpressionChildren;
+            this.childrenWalkers[TypeScript.NodeType.SignalObj] = ChildrenWalkers.walkUnaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.QMark] = ChildrenWalkers.walkTrinaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.LogOr] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.LogAnd] = ChildrenWalkers.walkBinaryExpressionChildren;
@@ -6415,7 +6433,8 @@ var TypeScript;
                 if(wasShorthand && this.tok.tokenId != TypeScript.TokenID.LCurly) {
                     var retExpr = this.parseExpr(errorRecoverySet | TypeScript.ErrorRecoverySet.SColon, TypeScript.OperatorPrecedence.Asg, true, TypeContext.NoTypes);
                     var retStmt = new TypeScript.ReturnStatement();
-                    retStmt.returnExpression = retExpr;
+                    retStmt.returnExpression = new TypeScript.ASTList();
+                    retStmt.returnExpression.append(retExpr);
                     retStmt.minChar = retExpr.minChar;
                     retStmt.limChar = retExpr.limChar;
                     bod.minChar = bodMinChar;
@@ -7687,14 +7706,8 @@ var TypeScript;
                             funcDecl.hint = idHint;
                         }
                     } else {
-                        this.reportParseError("Expected '=' in member definition");
-                        if(this.errorRecovery) {
-                            this.skip(errorRecoverySet);
-                            elements.flags |= TypeScript.ASTFlags.Error;
-                            elements.minChar = minChar;
-                            elements.limChar = this.scanner.lastTokenLimChar();
-                            return elements;
-                        }
+                        member = new TypeScript.UnaryExpression(TypeScript.NodeType.SignalObj, memberName);
+                        member.minChar = memberName.minChar;
                     }
                 }
                 idHint = null;
@@ -8136,6 +8149,16 @@ var TypeScript;
                         }
                         ast.limChar = this.scanner.pos;
                         this.chkCurTok(TypeScript.TokenID.RParen, "Expected ')'", errorRecoverySet);
+                        break;
+
+                    }
+                    case TypeScript.TokenID.LCurly: {
+                        var args = new TypeScript.ASTList();
+                        var arg = this.parseExpr(TypeScript.ErrorRecoverySet.Comma | errorRecoverySet, TypeScript.OperatorPrecedence.Cma, false, TypeContext.NoTypes);
+                        args.append(arg);
+                        ast = new TypeScript.CallExpression(TypeScript.NodeType.Call, ast, args);
+                        ast.minChar = lhsMinChar;
+                        ast.limChar = this.scanner.pos;
                         break;
 
                     }
@@ -8747,7 +8770,14 @@ var TypeScript;
                         var retStmt = new TypeScript.ReturnStatement();
                         retStmt.minChar = minChar;
                         if((this.tok.tokenId != TypeScript.TokenID.SColon) && (this.tok.tokenId != TypeScript.TokenID.RCurly) && (!(this.scanner.lastTokenHadNewline()))) {
-                            retStmt.returnExpression = this.parseExpr(errorRecoverySet | TypeScript.ErrorRecoverySet.SColon, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
+                            retStmt.returnExpression = new TypeScript.ASTList();
+                            var expr = this.parseExpr(errorRecoverySet | TypeScript.ErrorRecoverySet.SColon | TypeScript.ErrorRecoverySet.Comma, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
+                            retStmt.returnExpression.append(expr);
+                            while(this.tok.tokenId == TypeScript.TokenID.Comma) {
+                                this.tok = this.scanner.scan();
+                                expr = this.parseExpr(errorRecoverySet | TypeScript.ErrorRecoverySet.SColon | TypeScript.ErrorRecoverySet.Comma, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
+                                retStmt.returnExpression.append(expr);
+                            }
                         }
                         needTerminator = true;
                         retStmt.limChar = this.scanner.lastTokenLimChar();
@@ -19359,56 +19389,59 @@ var TypeScript;
             }
             if(memberDecls) {
                 for(var i = 0, len = memberDecls.members.length; i < len; i++) {
-                    var binex = memberDecls.members[i];
-                    var id = binex.operand1;
-                    var text;
-                    var targetMember = null;
-                    var fieldSymbol = null;
-                    if(id.nodeType == TypeScript.NodeType.Name) {
-                        text = (id).text;
-                    } else {
-                        if(id.nodeType == TypeScript.NodeType.QString) {
-                            var idText = (id).text;
-                            text = idText.substring(1, idText.length - 1);
-                        } else {
-                            this.checker.errorReporter.simpleError(objectLit, "malformed object literal");
-                            resultType = this.anyType;
-                            break;
-                        }
-                    }
-                    if(acceptTargetType && targetType.memberScope) {
-                        targetMember = targetType.memberScope.find(text, false, false);
-                    }
-                    if(binex.operand2.nodeType == TypeScript.NodeType.FuncDecl && (binex.operand2).isAccessor()) {
-                        var funcDecl = binex.operand2;
-                        var accessorSym = resultType.members.publicMembers.lookup(text);
-                        accessorSym = this.checker.createAccessorSymbol(funcDecl, accessorSym, resultType, true, false, resultType.memberScope, null);
-                        funcDecl.accessorSymbol = accessorSym;
-                        fieldSymbol = accessorSym;
+                    if(memberDecls.members[i] instanceof TypeScript.BinaryExpression) {
+                        var binex = memberDecls.members[i];
+                        var id = binex.operand1;
+                        var text;
+                        var targetMember = null;
+                        var fieldSymbol = null;
                         if(id.nodeType == TypeScript.NodeType.Name) {
-                            (id).sym = accessorSym;
+                            text = (id).text;
+                        } else {
+                            if(id.nodeType == TypeScript.NodeType.QString) {
+                                var idText = (id).text;
+                                text = idText.substring(1, idText.length - 1);
+                            } else {
+                                this.checker.errorReporter.simpleError(objectLit, "malformed object literal");
+                                resultType = this.anyType;
+                                break;
+                            }
                         }
-                    }
-                    this.checker.typeCheckWithContextualType(acceptTargetType && targetMember ? targetMember.getType() : null, false, acceptTargetType, binex.operand2);
-                    if(acceptTargetType && targetMember) {
-                        if((binex.operand2.type == this.anyType || this.checker.sourceIsAssignableToTarget(binex.operand2.type, targetMember.getType())) || (binex.operand2.nodeType == TypeScript.NodeType.FuncDecl && (binex.operand2).isAccessor() && this.typeFromAccessorFuncDecl(binex.operand2) == targetMember.getType())) {
-                            binex.operand1.type = targetMember.getType();
+                        if(acceptTargetType && targetType.memberScope) {
+                            targetMember = targetType.memberScope.find(text, false, false);
                         }
+                        if(binex.operand2.nodeType == TypeScript.NodeType.FuncDecl && (binex.operand2).isAccessor()) {
+                            var funcDecl = binex.operand2;
+                            var accessorSym = resultType.members.publicMembers.lookup(text);
+                            accessorSym = this.checker.createAccessorSymbol(funcDecl, accessorSym, resultType, true, false, resultType.memberScope, null);
+                            funcDecl.accessorSymbol = accessorSym;
+                            fieldSymbol = accessorSym;
+                            if(id.nodeType == TypeScript.NodeType.Name) {
+                                (id).sym = accessorSym;
+                            }
+                        }
+                        this.checker.typeCheckWithContextualType(acceptTargetType && targetMember ? targetMember.getType() : null, false, acceptTargetType, binex.operand2);
+                        if(acceptTargetType && targetMember) {
+                            if((binex.operand2.type == this.anyType || this.checker.sourceIsAssignableToTarget(binex.operand2.type, targetMember.getType())) || (binex.operand2.nodeType == TypeScript.NodeType.FuncDecl && (binex.operand2).isAccessor() && this.typeFromAccessorFuncDecl(binex.operand2) == targetMember.getType())) {
+                                binex.operand1.type = targetMember.getType();
+                            }
+                        } else {
+                            binex.operand2.type = binex.operand2.type == this.checker.undefinedType ? this.anyType : binex.operand2.type;
+                        }
+                        if(fieldSymbol == null) {
+                            var memberType = binex.operand2.type;
+                            var field = new TypeScript.ValueLocation();
+                            fieldSymbol = new TypeScript.FieldSymbol(text, id.minChar, this.checker.locationInfo.unitIndex, true, field);
+                            fieldSymbol.flags |= TypeScript.SymbolFlags.Property;
+                            field.symbol = fieldSymbol;
+                            fieldSymbol.typeCheckStatus = this.checker.getTypeCheckFinishedStatus();
+                            field.typeLink = new TypeScript.TypeLink();
+                            field.typeLink.type = memberType;
+                            resultType.members.publicMembers.add(text, fieldSymbol);
+                        }
+                        fieldSymbol.isObjectLitField = true;
                     } else {
-                        binex.operand2.type = binex.operand2.type == this.checker.undefinedType ? this.anyType : binex.operand2.type;
                     }
-                    if(fieldSymbol == null) {
-                        var memberType = binex.operand2.type;
-                        var field = new TypeScript.ValueLocation();
-                        fieldSymbol = new TypeScript.FieldSymbol(text, id.minChar, this.checker.locationInfo.unitIndex, true, field);
-                        fieldSymbol.flags |= TypeScript.SymbolFlags.Property;
-                        field.symbol = fieldSymbol;
-                        fieldSymbol.typeCheckStatus = this.checker.getTypeCheckFinishedStatus();
-                        field.typeLink = new TypeScript.TypeLink();
-                        field.typeLink.type = memberType;
-                        resultType.members.publicMembers.add(text, fieldSymbol);
-                    }
-                    fieldSymbol.isObjectLitField = true;
                 }
             }
             this.thisType = prevThisType;
@@ -19505,13 +19538,13 @@ var TypeScript;
                             this.checker.errorReporter.simpleError(returnStmt, "Return with value expression in void function");
                             returnStmt.type = returnStmt.returnExpression.type;
                         } else {
-                            returnStmt.returnExpression = this.cast(returnStmt.returnExpression, expectedReturnType);
+                            returnStmt.returnExpression.members[0] = this.cast(returnStmt.returnExpression.members[0], expectedReturnType);
                             returnStmt.type = expectedReturnType;
                         }
                     } else {
                         if(targetType) {
                             if(returnStmt.returnExpression.type != this.voidType) {
-                                returnStmt.returnExpression = this.cast(returnStmt.returnExpression, targetType);
+                                returnStmt.returnExpression.members[0] = this.cast(returnStmt.returnExpression.members[0], targetType);
                             } else {
                                 returnStmt.returnExpression.type = targetType;
                             }

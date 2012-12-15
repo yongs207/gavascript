@@ -123,6 +123,8 @@ module TypeScript {
             this.childrenWalkers[NodeType.Call] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[NodeType.New] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[NodeType.Asg] = ChildrenWalkers.walkBinaryExpressionChildren;
+            this.childrenWalkers[NodeType.SignalObj] = ChildrenWalkers.walkUnaryExpressionChildren;
+            
             //this.childrenWalkers[NodeType.AsgAdd] = ChildrenWalkers.walkBinaryExpressionChildren;
             //this.childrenWalkers[NodeType.AsgSub] = ChildrenWalkers.walkBinaryExpressionChildren;
             //this.childrenWalkers[NodeType.AsgDiv] = ChildrenWalkers.walkBinaryExpressionChildren;
@@ -327,7 +329,7 @@ module TypeScript {
 
         export function walkReturnStatementChildren(preAst: ReturnStatement, parent: AST, walker: IAstWalker): void {
             if (preAst.returnExpression) {
-                preAst.returnExpression = walker.walk(preAst.returnExpression, preAst);
+                preAst.returnExpression = <ASTList>walker.walk(preAst.returnExpression, preAst);
             }
         }
 

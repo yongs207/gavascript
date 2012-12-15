@@ -921,7 +921,8 @@ module TypeScript {
                                               OperatorPrecedence.Asg, true,
                                               TypeContext.NoTypes);
                         var retStmt = new ReturnStatement();
-                        retStmt.returnExpression = retExpr;
+                        retStmt.returnExpression = new ASTList();
+                        retStmt.returnExpression.append(retExpr);
                         retStmt.minChar = retExpr.minChar;
                         retStmt.limChar = retExpr.limChar;
                         bod.minChar = bodMinChar;
@@ -2414,7 +2415,7 @@ module TypeScript {
             var idHint: string = null;
             var memberName: AST = null;
             var memberExpr: AST = null;
-            var member: BinaryExpression = null;
+            var member: AST = null;
             var minChar = this.scanner.startPos;
             var isSet = false;
             var skippedTokenForGetSetId = false;
@@ -2541,14 +2542,16 @@ module TypeScript {
                     }
                 }
                 else {
-                    this.reportParseError("Expected '=' in member definition");
-                    if (this.errorRecovery) {
-                        this.skip(errorRecoverySet);
-                        elements.flags |= ASTFlags.Error;
-                        elements.minChar = minChar;
-                        elements.limChar = this.scanner.lastTokenLimChar();
-                        return elements;
-                    }
+                    member = new UnaryExpression(NodeType.SignalObj, memberName);
+                    member.minChar = memberName.minChar;
+                    //this.reportParseError("Expected '=' in member definition");
+                    //if (this.errorRecovery) {
+                    //    this.skip(errorRecoverySet);
+                    //    elements.flags |= ASTFlags.Error;
+                    //    elements.minChar = minChar;
+                    //    elements.limChar = this.scanner.lastTokenLimChar();
+                    //    return elements;
+                    //}
                 }
                 idHint = null;
                 elements.append(member);
@@ -2585,7 +2588,7 @@ module TypeScript {
             }
 
             var arg: AST;
-
+            //lua add limit for index
             for (; ;) {
                 if ((this.tok.tokenId == TokenID.Comma) ||
                     (this.tok.tokenId == TokenID.RBrack)) {
@@ -3114,6 +3117,16 @@ module TypeScript {
                         }
                         ast.limChar = this.scanner.pos; // ')'
                         this.chkCurTok(TokenID.RParen, "Expected ')'", errorRecoverySet);
+                        break;
+                    case TokenID.LCurly:
+                        var args: ASTList = new ASTList();
+                        var arg = this.parseExpr(ErrorRecoverySet.Comma | errorRecoverySet,
+                                          OperatorPrecedence.Cma, false, TypeContext.NoTypes);
+                        args.append(arg);
+                        ast = new CallExpression(NodeType.Call, ast,
+                                                   args);
+                        ast.minChar = lhsMinChar;
+                        ast.limChar = this.scanner.pos;
                         break;
                     case TokenID.LBrack:
                         this.tok = this.scanner.scan();
@@ -4032,7 +4045,7 @@ module TypeScript {
                         if (modifiers != Modifiers.None) {
                             this.reportParseError("modifiers can not appear before return statement");
                         }
-                        if (!this.inFnc) {
+                        if (!this.inFnc) {//in lua may be error
                             this.reportParseError("return statement outside of function body");
                         }
                         minChar = this.scanner.startPos;
@@ -4042,11 +4055,22 @@ module TypeScript {
                         if ((this.tok.tokenId != TokenID.SColon) &&
                             (this.tok.tokenId != TokenID.RCurly) &&
                             (!(this.scanner.lastTokenHadNewline()))) {
-                            retStmt.returnExpression = this.parseExpr(errorRecoverySet |
-                                                               ErrorRecoverySet.SColon,
+                            retStmt.returnExpression = new ASTList();
+                            var expr = this.parseExpr(errorRecoverySet |
+                                                               ErrorRecoverySet.SColon|ErrorRecoverySet.Comma,
                                                                OperatorPrecedence.No,
                                                                true, TypeContext.NoTypes);
-                        }
+                            retStmt.returnExpression.append(expr);
+                            while (this.tok.tokenId == TokenID.Comma) {
+                                this.tok = this.scanner.scan();
+                                expr = this.parseExpr(errorRecoverySet |
+                                                               ErrorRecoverySet.SColon|ErrorRecoverySet.Comma,
+                                                               OperatorPrecedence.No,
+                                                               true, TypeContext.NoTypes);
+                                retStmt.returnExpression.append(expr);
+                            }
+
+                        }//end if
                         needTerminator = true;
                         retStmt.limChar = this.scanner.lastTokenLimChar();
                         ast = retStmt;

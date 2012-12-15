@@ -444,6 +444,9 @@ module TypeScript {
                 //    emitter.emitJavascript(this.operand, TokenID.Dec, false);
                 //    emitter.writeToOutput("--");
                 //    break;
+                case NodeType.SignalObj:
+                    emitter.emitJavascript(this.operand, TokenID.Tilde, false);
+                    break;
                 case NodeType.ObjectLit:
                     emitter.emitObjectLiteral(<ASTList>this.operand);
                     break;
@@ -664,6 +667,13 @@ module TypeScript {
                             emitter.emitJavascriptName(<Identifier>this.operand2, false);
                         }
                         break;
+                    case NodeType.Colon:
+                        if (!emitter.tryEmitConstant(this)) {
+                            emitter.emitJavascript(this.operand1, TokenID.Colon, false);
+                            emitter.writeToOutput(":");
+                            emitter.emitJavascriptName(<Identifier>this.operand2, false);
+                        }
+                        break;
                     case NodeType.Index:
                         emitter.emitIndex(this.operand1, this.operand2);
                         break;
@@ -681,7 +691,7 @@ module TypeScript {
                         }
                         else {
                             emitter.emitJavascript(this.operand1, TokenID.Colon, false);
-                            emitter.writeToOutputTrimmable(": ");
+                            emitter.writeToOutputTrimmable("= ");
                         }
                         emitter.emitJavascript(this.operand2, TokenID.Comma, false);
                         break;
@@ -1702,7 +1712,7 @@ module TypeScript {
     }
 
     export class ReturnStatement extends Statement {
-        public returnExpression: AST = null;
+        public returnExpression: ASTList = null;
 
         constructor () {
             super(NodeType.Return);
@@ -1716,7 +1726,8 @@ module TypeScript {
             var temp = emitter.setInObjectLiteral(false);
             if (this.returnExpression) {
                 emitter.writeToOutput("return ");
-                emitter.emitJavascript(this.returnExpression, TokenID.SColon, false);
+                emitter.emitJavascriptList(this.returnExpression, ", ", TokenID.Comma, false, false, false);
+                emitter.writeToOutput(" ;");
             }
             else {
                 emitter.writeToOutput("return;");

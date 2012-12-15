@@ -1,0 +1,35 @@
+-----------------------------------------------------------------------------
+-- Low level FTP API
+-----------------------------------------------------------------------------
+local metat = { __index = {} }
+local a={"aaa",1,2}
+
+function open(server, port, create)
+    local tp = socket.try(tp.connect(server, port or PORT, TIMEOUT, create))
+    local f = base.setmetatable({ tp = tp }, metat)
+    --make sure everything gets closed in an exception
+    f.try = socket.newtry(function() f:close() end)
+    return f
+end
+
+function metat.__index:portconnect()
+    self.try(self.server:settimeout(TIMEOUT))
+    self.data = self.try(self.server:accept())
+    self.try(self.data:settimeout(TIMEOUT))
+end
+
+function metat.__index:pasvconnect()
+    self.data = self.try(socket.tcp())
+    self.try(self.data:settimeout(TIMEOUT))
+    self.try(self.data:connect(self.pasvt.ip, self.pasvt.port))
+end
+
+function metat.__index:login(user, password)
+    self.try(self.tp:command("user", user or USER))
+    local code, reply = self.try(self.tp:check{"2..", 331})
+    if code == 331 then
+        self.try(self.tp:command("pass", password or PASSWORD))
+        self.try(self.tp:check("2.."))
+    end
+    return 1
+end
