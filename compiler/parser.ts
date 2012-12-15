@@ -2296,6 +2296,35 @@ module TypeScript {
             }
         }
 
+        public parseAsgExp(asgList: ASTList, errorRecoverySet: ErrorRecoverySet): AST {
+            var valueList: ASTList = null;
+            var firstAsgValue: AST = null;
+            while (this.tok.tokenId == TokenID.Comma) {
+                this.scanner.scan();//skip ","
+                var temp = this.parseExpr(ErrorRecoverySet.Colon | ErrorRecoverySet.StmtStart |
+                                       errorRecoverySet, OperatorPrecedence.No, true,
+                                       TypeContext.NoTypes);
+                if (temp.nodeType == NodeType.Asg) {
+                    var binexp = <BinaryExpression> temp;
+                    valueList = new ASTList();
+                    temp = binexp.operand1;
+                    valueList.append(binexp.operand2);
+                    asgList.append(temp);
+                    break;
+                }
+                asgList.append(temp);
+            }
+            while (this.tok.tokenId == TokenID.Comma) {
+                this.scanner.scan();//skip ","
+                var temp = this.parseExpr(ErrorRecoverySet.Colon | ErrorRecoverySet.StmtStart |
+                                       errorRecoverySet, OperatorPrecedence.No, true,
+                                       TypeContext.NoTypes);
+                valueList.append(temp);
+            }
+            
+            return asgList;
+        }
+
         public parseVarDecl(errorRecoverySet: ErrorRecoverySet,
             modifiers: Modifiers,
             allowIn: bool,
@@ -4176,6 +4205,9 @@ module TypeScript {
                         if (this.style_requireSemi) {
                             this.reportParseStyleError("no automatic semicolon");
                         }
+                        break;
+                    case TokenID.Comma:
+                        
                         break;
                     default:
                         if (!this.scanner.lastTokenHadNewline()) {

@@ -1185,6 +1185,10 @@ module TypeScript {
 
                             this.interveningWhitespace = true;
                         }
+                    } 
+                    else {//end this.peekCharAt(this.pos + 1) == LexCodeMIN
+                        this.nextChar();
+                        return staticTokens[TokenID.Sub];
                     }
 
                 }
@@ -1359,9 +1363,7 @@ module TypeScript {
                             return staticTokens[TokenID.Add];
                         //}
                     // break;
-                    case LexCodeMIN:
-                            this.nextChar();
-                            return staticTokens[TokenID.Sub];
+
                     // break;
                     case LexCodeMUL:
                         //if (this.peekCharAt(this.pos + 1) == LexCodeEQ) {
@@ -1373,6 +1375,9 @@ module TypeScript {
                             return staticTokens[TokenID.Mult];
                         //}
                     // break;
+                    case LexCodeSLH:
+                            this.nextChar();
+                            return staticTokens[TokenID.Div];
                     case LexCodePCT:
                         //if (this.peekCharAt(this.pos + 1) == LexCodeEQ) {
                         //    this.advanceChar(2);

@@ -745,6 +745,19 @@ module TypeScript {
         }
     }
 
+    export class ListExpression extends AST {
+        public nty: NodeType;
+
+        constructor (nty: number, public operand1: ASTList, public operand2: ASTList) {
+            super(nty);
+            this.nty = nty;
+        }
+
+        public isExpression() { return true; }
+        public isStatementOrExpression() { return true; }
+
+    }
+
     export class NumberLiteral extends AST {
 
         constructor (public value: number) {

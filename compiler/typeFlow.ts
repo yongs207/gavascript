@@ -3267,7 +3267,7 @@ module TypeScript {
                                 returnStmt.returnExpression.type = targetType;
                             }
                         }
-                        returnStmt.type = returnStmt.returnExpression.type;
+                        returnStmt.type = returnStmt.returnExpression.members[0].type;
                     }
                     this.thisFnc.returnStatementsWithExpressions[this.thisFnc.returnStatementsWithExpressions.length] = returnStmt;
                 }

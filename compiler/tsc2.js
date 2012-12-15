@@ -1625,6 +1625,23 @@ var TypeScript;
         return TrinaryExpression;
     })(AST);
     TypeScript.TrinaryExpression = TrinaryExpression;    
+    var ListExpression = (function (_super) {
+        __extends(ListExpression, _super);
+        function ListExpression(nty, operand1, operand2) {
+                _super.call(this, nty);
+            this.operand1 = operand1;
+            this.operand2 = operand2;
+            this.nty = nty;
+        }
+        ListExpression.prototype.isExpression = function () {
+            return true;
+        };
+        ListExpression.prototype.isStatementOrExpression = function () {
+            return true;
+        };
+        return ListExpression;
+    })(AST);
+    TypeScript.ListExpression = ListExpression;    
     var NumberLiteral = (function (_super) {
         __extends(NumberLiteral, _super);
         function NumberLiteral(value) {
@@ -7496,6 +7513,29 @@ var TypeScript;
                 return varDecl;
             }
         };
+        Parser.prototype.parseAsgExp = function (asgList, errorRecoverySet) {
+            var valueList = null;
+            var firstAsgValue = null;
+            while(this.tok.tokenId == TypeScript.TokenID.Comma) {
+                this.scanner.scan();
+                var temp = this.parseExpr(TypeScript.ErrorRecoverySet.Colon | TypeScript.ErrorRecoverySet.StmtStart | errorRecoverySet, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
+                if(temp.nodeType == TypeScript.NodeType.Asg) {
+                    var binexp = temp;
+                    valueList = new TypeScript.ASTList();
+                    temp = binexp.operand1;
+                    valueList.append(binexp.operand2);
+                    asgList.append(temp);
+                    break;
+                }
+                asgList.append(temp);
+            }
+            while(this.tok.tokenId == TypeScript.TokenID.Comma) {
+                this.scanner.scan();
+                var temp = this.parseExpr(TypeScript.ErrorRecoverySet.Colon | TypeScript.ErrorRecoverySet.StmtStart | errorRecoverySet, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
+                valueList.append(temp);
+            }
+            return asgList;
+        };
         Parser.prototype.parseVarDecl = function (errorRecoverySet, modifiers, allowIn, isStatic) {
             var isConst = TypeScript.hasFlag(modifiers, TypeScript.Modifiers.Readonly);
             var minChar = this.scanner.startPos;
@@ -8881,6 +8921,10 @@ var TypeScript;
                         if(this.style_requireSemi) {
                             this.reportParseStyleError("no automatic semicolon");
                         }
+                        break;
+
+                    }
+                    case TypeScript.TokenID.Comma: {
                         break;
 
                     }
@@ -12013,6 +12057,9 @@ while(this.pos < this.len) {
                                     }
                                     this.interveningWhitespace = true;
                                 }
+                            } else {
+                                this.nextChar();
+                                return TypeScript.staticTokens[TypeScript.TokenID.Sub];
                             }
                         } else {
                             if(this.ch == TypeScript.LexCodeSMC) {
@@ -12149,14 +12196,14 @@ while(this.pos < this.len) {
                                                     return TypeScript.staticTokens[TypeScript.TokenID.Add];
 
                                                 }
-                                                case TypeScript.LexCodeMIN: {
-                                                    this.nextChar();
-                                                    return TypeScript.staticTokens[TypeScript.TokenID.Sub];
-
-                                                }
                                                 case TypeScript.LexCodeMUL: {
                                                     this.nextChar();
                                                     return TypeScript.staticTokens[TypeScript.TokenID.Mult];
+
+                                                }
+                                                case TypeScript.LexCodeSLH: {
+                                                    this.nextChar();
+                                                    return TypeScript.staticTokens[TypeScript.TokenID.Div];
 
                                                 }
                                                 case TypeScript.LexCodePCT: {
@@ -19549,7 +19596,7 @@ var TypeScript;
                                 returnStmt.returnExpression.type = targetType;
                             }
                         }
-                        returnStmt.type = returnStmt.returnExpression.type;
+                        returnStmt.type = returnStmt.returnExpression.members[0].type;
                     }
                     this.thisFnc.returnStatementsWithExpressions[this.thisFnc.returnStatementsWithExpressions.length] = returnStmt;
                 } else {
