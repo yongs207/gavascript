@@ -1062,6 +1062,7 @@ module TypeScript {
                             this.writeToOutput(", ");
                         }
                         this.emitJavascript(this.varListInits.members[initCount-1], TokenID.Comma, false);
+                        this.varListInits = null;
                     }
                 }
 

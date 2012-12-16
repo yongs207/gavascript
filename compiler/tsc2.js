@@ -7715,41 +7715,33 @@ var TypeScript;
                         }
                     }
                 } else {
-                    if((this.tok.tokenId == TypeScript.TokenID.ID) || TypeScript.convertTokToIDName(this.tok)) {
-                        idHint = this.tok.getText();
-                        memberName = TypeScript.Identifier.fromToken(this.tok);
-                        memberName.minChar = this.scanner.startPos;
-                        memberName.limChar = this.scanner.pos;
-                    } else {
-                        if(this.tok.tokenId == TypeScript.TokenID.QString) {
-                            idHint = this.tok.getText();
-                            memberName = new TypeScript.StringLiteral(idHint);
-                            memberName.minChar = this.scanner.startPos;
-                            memberName.limChar = this.scanner.pos;
+                    memberName = this.parseExpr(TypeScript.ErrorRecoverySet.Comma | errorRecoverySet, TypeScript.OperatorPrecedence.Asg, true, TypeContext.NoTypes);
+                    if(this.tok.tokenId == TypeScript.TokenID.Asg) {
+                        if(memberName.nodeType == TypeScript.NodeType.Name) {
+                            idHint = (memberName).actualText;
                         } else {
-                            if(this.tok.tokenId == TypeScript.TokenID.NumberLit) {
-                                var ntok = this.tok;
-                                idHint = ntok.value.toString();
-                                memberName = new TypeScript.StringLiteral(idHint);
-                                memberName.minChar = this.scanner.startPos;
-                                memberName.limChar = this.scanner.pos;
+                            if(memberName.nodeType == TypeScript.NodeType.QString) {
+                                idHint = (memberName).text;
                             } else {
-                                this.reportParseError("Expected identifier, string or number as member name");
-                                if(this.errorRecovery) {
-                                    memberName = new TypeScript.MissingIdentifier();
-                                    memberName.minChar = this.scanner.startPos;
-                                    memberName.flags |= TypeScript.ASTFlags.Error;
-                                    this.skip(errorRecoverySet | TypeScript.ErrorRecoverySet.Comma);
-                                    memberName.limChar = this.scanner.lastTokenLimChar();
+                                if(memberName.nodeType == TypeScript.NodeType.NumberLit) {
+                                    var num = memberName;
+                                    idHint = num.value.toString();
+                                    memberName = new TypeScript.StringLiteral(idHint);
+                                    memberName.minChar = num.minChar;
+                                    memberName.limChar = num.limChar;
+                                } else {
+                                    this.reportParseError("Expected identifier, string or number as member name");
+                                    if(this.errorRecovery) {
+                                        memberName = new TypeScript.MissingIdentifier();
+                                        memberName.minChar = this.scanner.startPos;
+                                        memberName.flags |= TypeScript.ASTFlags.Error;
+                                        this.skip(errorRecoverySet | TypeScript.ErrorRecoverySet.Comma);
+                                        memberName.limChar = this.scanner.lastTokenLimChar();
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if(!skippedTokenForGetSetId) {
-                    this.tok = this.scanner.scan();
-                } else {
-                    skippedTokenForGetSetId = false;
                 }
                 if(this.tok.tokenId == TypeScript.TokenID.QMark) {
                     memberName.flags |= TypeScript.ASTFlags.OptionalName;
@@ -19511,7 +19503,7 @@ var TypeScript;
             }
             if(memberDecls) {
                 for(var i = 0, len = memberDecls.members.length; i < len; i++) {
-                    if(memberDecls.members[i] instanceof TypeScript.BinaryExpression) {
+                    if(memberDecls.members[i].nodeType != TypeScript.NodeType.SignalObj) {
                         var binex = memberDecls.members[i];
                         var id = binex.operand1;
                         var text;

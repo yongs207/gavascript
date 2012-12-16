@@ -2482,44 +2482,69 @@ module TypeScript {
                         memberName.minChar = getSetStartPos;
                         memberName.limChar = getSetPos;
                     }
-                }
-                else if ((this.tok.tokenId == TokenID.ID) || convertTokToIDName(this.tok)) {
-                    idHint = this.tok.getText();
-                    memberName = Identifier.fromToken(this.tok);
-                    memberName.minChar = this.scanner.startPos;
-                    memberName.limChar = this.scanner.pos;
-                }
-                else if (this.tok.tokenId == TokenID.QString) {
-                    idHint = this.tok.getText();
-                    memberName = new StringLiteral(idHint);
-                    memberName.minChar = this.scanner.startPos;
-                    memberName.limChar = this.scanner.pos;
-                }
-                    // TODO: allow reserved words
-                else if (this.tok.tokenId == TokenID.NumberLit) {
-                    var ntok = <NumberToken>this.tok;
-                    idHint = ntok.value.toString();
-                    memberName = new StringLiteral(idHint);
-                    memberName.minChar = this.scanner.startPos;
-                    memberName.limChar = this.scanner.pos;
-                }
-                else {
-                    this.reportParseError("Expected identifier, string or number as member name");
-                    if (this.errorRecovery) {
-                        memberName = new MissingIdentifier();
-                        memberName.minChar = this.scanner.startPos;
-                        memberName.flags |= ASTFlags.Error;
-                        this.skip(errorRecoverySet | ErrorRecoverySet.Comma);
-                        memberName.limChar = this.scanner.lastTokenLimChar();
+                } else {
+                    memberName = this.parseExpr(ErrorRecoverySet.Comma | errorRecoverySet,
+                                         OperatorPrecedence.Asg, true, TypeContext.NoTypes);
+                    if (this.tok.tokenId == TokenID.Asg) {
+                        if (memberName.nodeType == NodeType.Name) {
+                            idHint = (<Identifier>memberName).actualText;
+                        } else if (memberName.nodeType == NodeType.QString) {
+                            idHint = (<StringLiteral>memberName).text;
+                        } else if (memberName.nodeType == NodeType.NumberLit) {
+                            var num = <NumberLiteral>memberName;
+                            idHint = num.value.toString();
+                            memberName = new StringLiteral(idHint);
+                            memberName.minChar = num.minChar;
+                            memberName.limChar = num.limChar;
+                        } else {
+                            this.reportParseError("Expected identifier, string or number as member name");
+                            if (this.errorRecovery) {
+                                memberName = new MissingIdentifier();
+                                memberName.minChar = this.scanner.startPos;
+                                memberName.flags |= ASTFlags.Error;
+                                this.skip(errorRecoverySet | ErrorRecoverySet.Comma);
+                                memberName.limChar = this.scanner.lastTokenLimChar();
+                            }
+                        }//end else
                     }
-                }
+                }// end else
+                //else if ((this.tok.tokenId == TokenID.ID) || convertTokToIDName(this.tok)) {
+                //    idHint = this.tok.getText();
+                //    memberName = Identifier.fromToken(this.tok);
+                //    memberName.minChar = this.scanner.startPos;
+                //    memberName.limChar = this.scanner.pos;
+                //}
+                //else if (this.tok.tokenId == TokenID.QString) {
+                //    idHint = this.tok.getText();
+                //    memberName = new StringLiteral(idHint);
+                //    memberName.minChar = this.scanner.startPos;
+                //    memberName.limChar = this.scanner.pos;
+                //}
+                //    // TODO: allow reserved words
+                //else if (this.tok.tokenId == TokenID.NumberLit) {
+                //    var ntok = <NumberToken>this.tok;
+                //    idHint = ntok.value.toString();
+                //    memberName = new StringLiteral(idHint);
+                //    memberName.minChar = this.scanner.startPos;
+                //    memberName.limChar = this.scanner.pos;
+                //}
+                //else {
+                //    this.reportParseError("Expected identifier, string or number as member name");
+                //    if (this.errorRecovery) {
+                //        memberName = new MissingIdentifier();
+                //        memberName.minChar = this.scanner.startPos;
+                //        memberName.flags |= ASTFlags.Error;
+                //        this.skip(errorRecoverySet | ErrorRecoverySet.Comma);
+                //        memberName.limChar = this.scanner.lastTokenLimChar();
+                //    }
+                //}
 
-                if (!skippedTokenForGetSetId) {
-                    this.tok = this.scanner.scan();
-                }
-                else {
-                    skippedTokenForGetSetId = false;
-                }
+                //if (!skippedTokenForGetSetId) {
+                //    this.tok = this.scanner.scan();
+                //}
+                //else {
+                //    skippedTokenForGetSetId = false;
+                //}
 
                 if (this.tok.tokenId == TokenID.QMark) {
                     memberName.flags |= ASTFlags.OptionalName;
@@ -2574,14 +2599,6 @@ module TypeScript {
                 else {
                     member = new UnaryExpression(NodeType.SignalObj, memberName);
                     member.minChar = memberName.minChar;
-                    //this.reportParseError("Expected '=' in member definition");
-                    //if (this.errorRecovery) {
-                    //    this.skip(errorRecoverySet);
-                    //    elements.flags |= ASTFlags.Error;
-                    //    elements.minChar = minChar;
-                    //    elements.limChar = this.scanner.lastTokenLimChar();
-                    //    return elements;
-                    //}
                 }
                 idHint = null;
                 elements.append(member);

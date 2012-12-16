@@ -3073,7 +3073,7 @@ module TypeScript {
 
             if (memberDecls) {
                 for (var i = 0, len = memberDecls.members.length; i < len; i++) {
-                    if (memberDecls.members[i] instanceof BinaryExpression) {//add typecheck for UnaryExpression
+                    if (memberDecls.members[i].nodeType != NodeType.SignalObj) {//add typecheck for UnaryExpression
                         var binex = <BinaryExpression>memberDecls.members[i];
 
                         var id = binex.operand1;
