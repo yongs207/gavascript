@@ -38,6 +38,7 @@ module TypeScript {
         New,
         Asg,
         SignalObj,
+        AsgList,
         //AsgAdd,
         //AsgSub,
         //AsgDiv,

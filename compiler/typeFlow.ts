@@ -1534,6 +1534,44 @@ module TypeScript {
             return binex;
         }
 
+        public typeCheckListExpress(ast: AST): AST {
+            var listex = <ListExpression>ast;
+            var operand1 = listex.operand1;
+            var operand2 = listex.operand2;
+            var i;
+            for (i = 0; i < operand2.members.length; i++) {
+                var leftItem = operand1.members[i];
+                var rightItem = operand2.members[i];
+                var applyTargetType = !rightItem.isParenthesized;
+                leftItem = this.typeCheck(leftItem);
+                this.checker.typeCheckWithContextualType(leftItem.type, this.checker.inProvisionalTypecheckMode(), applyTargetType, rightItem);
+
+                var leftType = leftItem.type;
+                var rightType = rightItem.type;
+
+                if (!(this.astIsWriteable(leftItem))) {
+                    this.checker.errorReporter.valueCannotBeModified(leftItem);
+                }
+
+                var preserveScope = false;
+                var preservedContainedScope = null;
+                if (rightItem.type) {
+                    preservedContainedScope = rightItem.type.containedScope;
+                    preserveScope = true;
+                }
+                rightItem = this.castWithCoercion(rightItem, leftType, applyTargetType, false);
+                if (preserveScope && rightItem.type.containedScope == null) {
+                    rightItem.type.containedScope = preservedContainedScope;
+                }
+            }
+            for (; i < operand1.members.length; i++) {
+                var leftItem = operand1.members[i];
+                leftItem = this.typeCheck(leftItem);
+            }
+            listex.type = this.checker.anyType;
+            return listex;
+        }
+
         public typeCheckIndex(ast: AST): AST {
             var binex = <BinaryExpression>ast;
             binex.operand1 = this.typeCheck(binex.operand1); // ObjExpr

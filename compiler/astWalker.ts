@@ -124,6 +124,7 @@ module TypeScript {
             this.childrenWalkers[NodeType.New] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[NodeType.Asg] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[NodeType.SignalObj] = ChildrenWalkers.walkUnaryExpressionChildren;
+            this.childrenWalkers[NodeType.AsgList] = ChildrenWalkers.walkListExpressionChildren;
             
             //this.childrenWalkers[NodeType.AsgAdd] = ChildrenWalkers.walkBinaryExpressionChildren;
             //this.childrenWalkers[NodeType.AsgSub] = ChildrenWalkers.walkBinaryExpressionChildren;
@@ -270,6 +271,9 @@ module TypeScript {
             }
         }
 
+
+        
+
         export function walkTypeReferenceChildren(preAst: TypeReference, parent: AST, walker: IAstWalker): void {
             if (preAst.term) {
                 preAst.term = walker.walk(preAst.term, preAst);
@@ -297,6 +301,15 @@ module TypeScript {
             }
             if (preAst.operand3 && (walker.options.goNextSibling)) {
                 preAst.operand3 = walker.walk(preAst.operand3, preAst);
+            }
+        }
+
+        export function walkListExpressionChildren(preAst: ListExpression, parent: AST, walker: IAstWalker): void {
+            if (preAst.operand1) {
+                preAst.operand1 = <ASTList>walker.walk(preAst.operand1, preAst);
+            }
+            if (preAst.operand2 && (walker.options.goNextSibling)) {
+                preAst.operand2 = <ASTList>walker.walk(preAst.operand2, preAst);
             }
         }
 

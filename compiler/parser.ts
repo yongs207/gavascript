@@ -2296,11 +2296,12 @@ module TypeScript {
             }
         }
 
-        public parseAsgExp(asgList: ASTList, errorRecoverySet: ErrorRecoverySet): AST {
+        public parseAsgList(ast: AST, errorRecoverySet: ErrorRecoverySet): AST {
             var valueList: ASTList = null;
-            var firstAsgValue: AST = null;
+            var asgList: ASTList = new ASTList();
+            asgList.append(ast);
             while (this.tok.tokenId == TokenID.Comma) {
-                this.scanner.scan();//skip ","
+                this.tok = this.scanner.scan();//skip ","
                 var temp = this.parseExpr(ErrorRecoverySet.Colon | ErrorRecoverySet.StmtStart |
                                        errorRecoverySet, OperatorPrecedence.No, true,
                                        TypeContext.NoTypes);
@@ -2315,14 +2316,14 @@ module TypeScript {
                 asgList.append(temp);
             }
             while (this.tok.tokenId == TokenID.Comma) {
-                this.scanner.scan();//skip ","
+                this.tok = this.scanner.scan();//skip ","
                 var temp = this.parseExpr(ErrorRecoverySet.Colon | ErrorRecoverySet.StmtStart |
                                        errorRecoverySet, OperatorPrecedence.No, true,
                                        TypeContext.NoTypes);
                 valueList.append(temp);
             }
-            
-            return asgList;
+             
+            return new ListExpression(NodeType.AsgList,asgList,valueList);
         }
 
         public parseVarDecl(errorRecoverySet: ErrorRecoverySet,
@@ -4208,6 +4209,7 @@ module TypeScript {
                         break;
                     case TokenID.Comma:
                         
+                        ast = this.parseAsgList(ast, errorRecoverySet);
                         break;
                     default:
                         if (!this.scanner.lastTokenHadNewline()) {

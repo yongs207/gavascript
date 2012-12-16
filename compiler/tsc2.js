@@ -552,100 +552,102 @@ var TypeScript;
         NodeType.Asg = 31;
         NodeType._map[32] = "SignalObj";
         NodeType.SignalObj = 32;
-        NodeType._map[33] = "QMark";
-        NodeType.QMark = 33;
-        NodeType._map[34] = "LogOr";
-        NodeType.LogOr = 34;
-        NodeType._map[35] = "LogAnd";
-        NodeType.LogAnd = 35;
-        NodeType._map[36] = "Or";
-        NodeType.Or = 36;
-        NodeType._map[37] = "And";
-        NodeType.And = 37;
-        NodeType._map[38] = "Eq";
-        NodeType.Eq = 38;
-        NodeType._map[39] = "Ne";
-        NodeType.Ne = 39;
-        NodeType._map[40] = "Lt";
-        NodeType.Lt = 40;
-        NodeType._map[41] = "Le";
-        NodeType.Le = 41;
-        NodeType._map[42] = "Gt";
-        NodeType.Gt = 42;
-        NodeType._map[43] = "Ge";
-        NodeType.Ge = 43;
-        NodeType._map[44] = "Add";
-        NodeType.Add = 44;
-        NodeType._map[45] = "Sub";
-        NodeType.Sub = 45;
-        NodeType._map[46] = "Mul";
-        NodeType.Mul = 46;
-        NodeType._map[47] = "Div";
-        NodeType.Div = 47;
-        NodeType._map[48] = "Mod";
-        NodeType.Mod = 48;
-        NodeType._map[49] = "Not";
-        NodeType.Not = 49;
-        NodeType._map[50] = "LogNot";
-        NodeType.LogNot = 50;
-        NodeType._map[51] = "TypeAssertion";
-        NodeType.TypeAssertion = 51;
-        NodeType._map[52] = "FuncDecl";
-        NodeType.FuncDecl = 52;
-        NodeType._map[53] = "Member";
-        NodeType.Member = 53;
-        NodeType._map[54] = "VarDecl";
-        NodeType.VarDecl = 54;
-        NodeType._map[55] = "ArgDecl";
-        NodeType.ArgDecl = 55;
-        NodeType._map[56] = "Return";
-        NodeType.Return = 56;
-        NodeType._map[57] = "Break";
-        NodeType.Break = 57;
-        NodeType._map[58] = "Continue";
-        NodeType.Continue = 58;
-        NodeType._map[59] = "Throw";
-        NodeType.Throw = 59;
-        NodeType._map[60] = "For";
-        NodeType.For = 60;
-        NodeType._map[61] = "ForIn";
-        NodeType.ForIn = 61;
-        NodeType._map[62] = "If";
-        NodeType.If = 62;
-        NodeType._map[63] = "While";
-        NodeType.While = 63;
-        NodeType._map[64] = "Repeat";
-        NodeType.Repeat = 64;
-        NodeType._map[65] = "Block";
-        NodeType.Block = 65;
-        NodeType._map[66] = "List";
-        NodeType.List = 66;
-        NodeType._map[67] = "Script";
-        NodeType.Script = 67;
-        NodeType._map[68] = "Class";
-        NodeType.Class = 68;
-        NodeType._map[69] = "Interface";
-        NodeType.Interface = 69;
-        NodeType._map[70] = "Module";
-        NodeType.Module = 70;
-        NodeType._map[71] = "Import";
-        NodeType.Import = 71;
-        NodeType._map[72] = "Label";
-        NodeType.Label = 72;
-        NodeType._map[73] = "LabeledStatement";
-        NodeType.LabeledStatement = 73;
-        NodeType._map[74] = "EBStart";
-        NodeType.EBStart = 74;
-        NodeType._map[75] = "GotoEB";
-        NodeType.GotoEB = 75;
-        NodeType._map[76] = "EndCode";
-        NodeType.EndCode = 76;
-        NodeType._map[77] = "Error";
-        NodeType.Error = 77;
-        NodeType._map[78] = "Comment";
-        NodeType.Comment = 78;
-        NodeType._map[79] = "Debugger";
-        NodeType.Debugger = 79;
+        NodeType._map[33] = "AsgList";
+        NodeType.AsgList = 33;
+        NodeType._map[34] = "QMark";
+        NodeType.QMark = 34;
+        NodeType._map[35] = "LogOr";
+        NodeType.LogOr = 35;
+        NodeType._map[36] = "LogAnd";
+        NodeType.LogAnd = 36;
+        NodeType._map[37] = "Or";
+        NodeType.Or = 37;
+        NodeType._map[38] = "And";
+        NodeType.And = 38;
+        NodeType._map[39] = "Eq";
+        NodeType.Eq = 39;
+        NodeType._map[40] = "Ne";
+        NodeType.Ne = 40;
+        NodeType._map[41] = "Lt";
+        NodeType.Lt = 41;
+        NodeType._map[42] = "Le";
+        NodeType.Le = 42;
+        NodeType._map[43] = "Gt";
+        NodeType.Gt = 43;
+        NodeType._map[44] = "Ge";
+        NodeType.Ge = 44;
+        NodeType._map[45] = "Add";
+        NodeType.Add = 45;
+        NodeType._map[46] = "Sub";
+        NodeType.Sub = 46;
+        NodeType._map[47] = "Mul";
+        NodeType.Mul = 47;
+        NodeType._map[48] = "Div";
+        NodeType.Div = 48;
+        NodeType._map[49] = "Mod";
+        NodeType.Mod = 49;
+        NodeType._map[50] = "Not";
+        NodeType.Not = 50;
+        NodeType._map[51] = "LogNot";
+        NodeType.LogNot = 51;
+        NodeType._map[52] = "TypeAssertion";
+        NodeType.TypeAssertion = 52;
+        NodeType._map[53] = "FuncDecl";
+        NodeType.FuncDecl = 53;
+        NodeType._map[54] = "Member";
+        NodeType.Member = 54;
+        NodeType._map[55] = "VarDecl";
+        NodeType.VarDecl = 55;
+        NodeType._map[56] = "ArgDecl";
+        NodeType.ArgDecl = 56;
+        NodeType._map[57] = "Return";
+        NodeType.Return = 57;
+        NodeType._map[58] = "Break";
+        NodeType.Break = 58;
+        NodeType._map[59] = "Continue";
+        NodeType.Continue = 59;
+        NodeType._map[60] = "Throw";
+        NodeType.Throw = 60;
+        NodeType._map[61] = "For";
+        NodeType.For = 61;
+        NodeType._map[62] = "ForIn";
+        NodeType.ForIn = 62;
+        NodeType._map[63] = "If";
+        NodeType.If = 63;
+        NodeType._map[64] = "While";
+        NodeType.While = 64;
+        NodeType._map[65] = "Repeat";
+        NodeType.Repeat = 65;
+        NodeType._map[66] = "Block";
+        NodeType.Block = 66;
+        NodeType._map[67] = "List";
+        NodeType.List = 67;
+        NodeType._map[68] = "Script";
+        NodeType.Script = 68;
+        NodeType._map[69] = "Class";
+        NodeType.Class = 69;
+        NodeType._map[70] = "Interface";
+        NodeType.Interface = 70;
+        NodeType._map[71] = "Module";
+        NodeType.Module = 71;
+        NodeType._map[72] = "Import";
+        NodeType.Import = 72;
+        NodeType._map[73] = "Label";
+        NodeType.Label = 73;
+        NodeType._map[74] = "LabeledStatement";
+        NodeType.LabeledStatement = 74;
+        NodeType._map[75] = "EBStart";
+        NodeType.EBStart = 75;
+        NodeType._map[76] = "GotoEB";
+        NodeType.GotoEB = 76;
+        NodeType._map[77] = "EndCode";
+        NodeType.EndCode = 77;
+        NodeType._map[78] = "Error";
+        NodeType.Error = 78;
+        NodeType._map[79] = "Comment";
+        NodeType.Comment = 79;
+        NodeType._map[80] = "Debugger";
+        NodeType.Debugger = 80;
         NodeType.GeneralNode = NodeType.FuncDecl;
     })(TypeScript.NodeType || (TypeScript.NodeType = {}));
     var NodeType = TypeScript.NodeType;
@@ -1638,6 +1640,27 @@ var TypeScript;
         };
         ListExpression.prototype.isStatementOrExpression = function () {
             return true;
+        };
+        ListExpression.prototype.typeCheck = function (typeFlow) {
+            return typeFlow.typeCheckListExpress(this);
+        };
+        ListExpression.prototype.emit = function (emitter, tokenId, startLine) {
+            emitter.emitParensAndCommentsInPlace(this, true);
+            emitter.recordSourceMappingStart(this);
+            for(var i = 0; i < this.operand1.members.length - 1; i++) {
+                emitter.emitJavascript(this.operand1.members[i], TypeScript.TokenID.Comma, false);
+                emitter.writeToOutput(", ");
+            }
+            emitter.emitJavascript(this.operand1.members[this.operand1.members.length - 1], TypeScript.TokenID.Comma, false);
+            emitter.writeToOutput(" = ");
+            for(var i = 0; i < this.operand2.members.length - 1; i++) {
+                emitter.emitJavascript(this.operand2.members[i], TypeScript.TokenID.Comma, false);
+                emitter.writeToOutput(", ");
+            }
+            emitter.emitJavascript(this.operand2.members[this.operand2.members.length - 1], TypeScript.TokenID.Comma, false);
+            emitter.writeToOutput(";");
+            emitter.recordSourceMappingEnd(this);
+            emitter.emitParensAndCommentsInPlace(this, false);
         };
         return ListExpression;
     })(AST);
@@ -3003,6 +3026,7 @@ var TypeScript;
             this.childrenWalkers[TypeScript.NodeType.New] = ChildrenWalkers.walkCallExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.Asg] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.SignalObj] = ChildrenWalkers.walkUnaryExpressionChildren;
+            this.childrenWalkers[TypeScript.NodeType.AsgList] = ChildrenWalkers.walkListExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.QMark] = ChildrenWalkers.walkTrinaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.LogOr] = ChildrenWalkers.walkBinaryExpressionChildren;
             this.childrenWalkers[TypeScript.NodeType.LogAnd] = ChildrenWalkers.walkBinaryExpressionChildren;
@@ -3146,6 +3170,15 @@ var TypeScript;
             }
         }
         ChildrenWalkers.walkTrinaryExpressionChildren = walkTrinaryExpressionChildren;
+        function walkListExpressionChildren(preAst, parent, walker) {
+            if(preAst.operand1) {
+                preAst.operand1 = walker.walk(preAst.operand1, preAst);
+            }
+            if(preAst.operand2 && (walker.options.goNextSibling)) {
+                preAst.operand2 = walker.walk(preAst.operand2, preAst);
+            }
+        }
+        ChildrenWalkers.walkListExpressionChildren = walkListExpressionChildren;
         function walkFuncDeclChildren(preAst, parent, walker) {
             if(preAst.name) {
                 preAst.name = walker.walk(preAst.name, preAst);
@@ -7513,11 +7546,12 @@ var TypeScript;
                 return varDecl;
             }
         };
-        Parser.prototype.parseAsgExp = function (asgList, errorRecoverySet) {
+        Parser.prototype.parseAsgList = function (ast, errorRecoverySet) {
             var valueList = null;
-            var firstAsgValue = null;
+            var asgList = new TypeScript.ASTList();
+            asgList.append(ast);
             while(this.tok.tokenId == TypeScript.TokenID.Comma) {
-                this.scanner.scan();
+                this.tok = this.scanner.scan();
                 var temp = this.parseExpr(TypeScript.ErrorRecoverySet.Colon | TypeScript.ErrorRecoverySet.StmtStart | errorRecoverySet, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
                 if(temp.nodeType == TypeScript.NodeType.Asg) {
                     var binexp = temp;
@@ -7530,11 +7564,11 @@ var TypeScript;
                 asgList.append(temp);
             }
             while(this.tok.tokenId == TypeScript.TokenID.Comma) {
-                this.scanner.scan();
+                this.tok = this.scanner.scan();
                 var temp = this.parseExpr(TypeScript.ErrorRecoverySet.Colon | TypeScript.ErrorRecoverySet.StmtStart | errorRecoverySet, TypeScript.OperatorPrecedence.No, true, TypeContext.NoTypes);
                 valueList.append(temp);
             }
-            return asgList;
+            return new TypeScript.ListExpression(TypeScript.NodeType.AsgList, asgList, valueList);
         };
         Parser.prototype.parseVarDecl = function (errorRecoverySet, modifiers, allowIn, isStatic) {
             var isConst = TypeScript.hasFlag(modifiers, TypeScript.Modifiers.Readonly);
@@ -8925,6 +8959,7 @@ var TypeScript;
 
                     }
                     case TypeScript.TokenID.Comma: {
+                        ast = this.parseAsgList(ast, errorRecoverySet);
                         break;
 
                     }
@@ -18235,6 +18270,40 @@ var TypeScript;
             }
             binex.type = rightType;
             return binex;
+        };
+        TypeFlow.prototype.typeCheckListExpress = function (ast) {
+            var listex = ast;
+            var operand1 = listex.operand1;
+            var operand2 = listex.operand2;
+            var i;
+            for(i = 0; i < operand2.members.length; i++) {
+                var leftItem = operand1.members[i];
+                var rightItem = operand2.members[i];
+                var applyTargetType = !rightItem.isParenthesized;
+                leftItem = this.typeCheck(leftItem);
+                this.checker.typeCheckWithContextualType(leftItem.type, this.checker.inProvisionalTypecheckMode(), applyTargetType, rightItem);
+                var leftType = leftItem.type;
+                var rightType = rightItem.type;
+                if(!(this.astIsWriteable(leftItem))) {
+                    this.checker.errorReporter.valueCannotBeModified(leftItem);
+                }
+                var preserveScope = false;
+                var preservedContainedScope = null;
+                if(rightItem.type) {
+                    preservedContainedScope = rightItem.type.containedScope;
+                    preserveScope = true;
+                }
+                rightItem = this.castWithCoercion(rightItem, leftType, applyTargetType, false);
+                if(preserveScope && rightItem.type.containedScope == null) {
+                    rightItem.type.containedScope = preservedContainedScope;
+                }
+            }
+            for(; i < operand1.members.length; i++) {
+                var leftItem = operand1.members[i];
+                leftItem = this.typeCheck(leftItem);
+            }
+            listex.type = this.checker.anyType;
+            return listex;
         };
         TypeFlow.prototype.typeCheckIndex = function (ast) {
             var binex = ast;

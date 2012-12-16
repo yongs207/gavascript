@@ -755,7 +755,27 @@ module TypeScript {
 
         public isExpression() { return true; }
         public isStatementOrExpression() { return true; }
-
+        public typeCheck(typeFlow: TypeFlow) {
+            return typeFlow.typeCheckListExpress(this);
+        }
+        public emit(emitter: Emitter, tokenId: TokenID, startLine: bool) {
+            emitter.emitParensAndCommentsInPlace(this, true);
+            emitter.recordSourceMappingStart(this);
+            for (var i = 0; i < this.operand1.members.length-1; i++) {
+                emitter.emitJavascript(this.operand1.members[i], TokenID.Comma, false);
+                emitter.writeToOutput(", ");
+            }
+            emitter.emitJavascript(this.operand1.members[this.operand1.members.length-1], TokenID.Comma, false);
+            emitter.writeToOutput(" = ");
+            for (var i = 0; i < this.operand2.members.length-1; i++) {
+                emitter.emitJavascript(this.operand2.members[i], TokenID.Comma, false);
+                emitter.writeToOutput(", ");
+            }
+            emitter.emitJavascript(this.operand2.members[this.operand2.members.length-1], TokenID.Comma, false);
+            emitter.writeToOutput(";");
+            emitter.recordSourceMappingEnd(this);
+            emitter.emitParensAndCommentsInPlace(this, false);
+        }
     }
 
     export class NumberLiteral extends AST {
