@@ -1346,6 +1346,12 @@ var TypeScript;
                     break;
 
                 }
+                case TypeScript.NodeType.Not: {
+                    emitter.writeToOutput(" not ");
+                    emitter.emitJavascript(this.operand, TypeScript.TokenID.Tilde, false);
+                    break;
+
+                }
                 case TypeScript.NodeType.Neg: {
                     emitter.writeToOutput("-");
                     if(this.operand.nodeType == TypeScript.NodeType.Neg) {
@@ -1658,7 +1664,6 @@ var TypeScript;
                 emitter.writeToOutput(", ");
             }
             emitter.emitJavascript(this.operand2.members[this.operand2.members.length - 1], TypeScript.TokenID.Comma, false);
-            emitter.writeToOutput(";");
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);
         };
@@ -5035,6 +5040,7 @@ var TypeScript;
                             this.writeToOutput(", ");
                         }
                         this.emitJavascript(this.varListInits.members[initCount - 1], TypeScript.TokenID.Comma, false);
+                        this.varListInits = null;
                     }
                 }
             }

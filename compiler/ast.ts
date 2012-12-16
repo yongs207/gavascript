@@ -453,10 +453,10 @@ module TypeScript {
                 case NodeType.ArrayLit:
                     emitter.emitArrayLiteral(<ASTList>this.operand);
                     break;
-                //case NodeType.Not:
-                //    emitter.writeToOutput("~");
-                //    emitter.emitJavascript(this.operand, TokenID.Tilde, false);
-                //    break;
+                case NodeType.Not:
+                    emitter.writeToOutput(" not ");
+                    emitter.emitJavascript(this.operand, TokenID.Tilde, false);
+                    break;
                 case NodeType.Neg:
                     emitter.writeToOutput("-");
                     if (this.operand.nodeType == NodeType.Neg) {
@@ -772,7 +772,7 @@ module TypeScript {
                 emitter.writeToOutput(", ");
             }
             emitter.emitJavascript(this.operand2.members[this.operand2.members.length-1], TokenID.Comma, false);
-            emitter.writeToOutput(";");
+            //emitter.writeToOutput(";");
             emitter.recordSourceMappingEnd(this);
             emitter.emitParensAndCommentsInPlace(this, false);
         }
