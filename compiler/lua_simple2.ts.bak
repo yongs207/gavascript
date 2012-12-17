@@ -1,4 +1,9 @@
+        for i,v in base.pairs(t) do
+            u[i] = v
+        end
+
 local metat = { __index = {} }
+
 
 function open(server, port, create)
     local tp = socket.try(tp.connect(server, port or PORT, TIMEOUT, create))

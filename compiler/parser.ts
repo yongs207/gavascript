@@ -3761,6 +3761,11 @@ module TypeScript {
                         this.tok = this.scanner.scan();//skip for
                         this.state = ParseState.ForInit;
                         forInOk = true;
+
+                        if(astList == null)
+                            astList = new ASTList();
+
+
                         //switch (this.tok.tokenId) {
                         //    case TokenID.LOCAL:
                         //        temp = this.parseVarDecl(errorRecoverySet | ErrorRecoverySet.SColon |
@@ -3776,10 +3781,20 @@ module TypeScript {
                         //                       TypeContext.NoTypes);
                         //        break;
                         //}
-                        temp = this.parseExpr(errorRecoverySet | ErrorRecoverySet.SColon |
+                        temp = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
                                                ErrorRecoverySet.In, OperatorPrecedence.No, false,
                                                TypeContext.NoTypes);
-                        this.state = ParseState.ForInitAfterVar;
+                        astList.append(temp);
+
+                        while (this.tok.tokenId == TokenID.Comma) {
+                            this.tok = this.scanner.scan();
+                            temp = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
+                                               ErrorRecoverySet.In, OperatorPrecedence.No, false,
+                                               TypeContext.NoTypes);
+                            astList.append(temp);
+                        }
+
+                        //this.state = ParseState.ForInitAfterVar;
                         if (this.tok.tokenId == TokenID.IN) {
                             if ((temp == null) || (!forInOk)) {
                                 this.reportParseError("malformed for statement");
@@ -3791,7 +3806,7 @@ module TypeScript {
                             }
                             else {
                                 this.tok = this.scanner.scan();
-                                var forInStmt = new ForInStatement(temp,
+                                var forInStmt = new ForInStatement(astList,
                                                                  this.parseExpr(ErrorRecoverySet.RParen |
                                                                            errorRecoverySet,
                                                                            OperatorPrecedence.Cma,
@@ -3801,7 +3816,7 @@ module TypeScript {
                                 forInStmt.limChar = this.scanner.pos;
                                 forInStmt.statement.minChar = minChar;
                                 forInStmt.statement.limChar = this.scanner.pos;
-                                this.chkCurTok(TokenID.RParen, "Expected ')'", ErrorRecoverySet.StmtStart |
+                                this.chkCurTok(TokenID.DO, "Expected 'do'", ErrorRecoverySet.StmtStart |
                                           errorRecoverySet);
                                 this.pushStmt(forInStmt, labelList);
                                 forInStmt.body = this.parseBlock(errorRecoverySet, labelList,BlockEndElements.None, parentModifiers);
@@ -3811,33 +3826,51 @@ module TypeScript {
                             }
                         }
                         else {
+                            var tmpMinChar = minChar;
                             var forStmt: ForStatement = new ForStatement(temp);
                             forStmt.minChar = minChar;
-                            this.chkCurTok(TokenID.Comma, "Expected ','", errorRecoverySet);
-                            if (this.tok.tokenId == TokenID.Comma) {
+                            if (astList.members.length > 3) {
+                                this.reportParseError("for statement too much expr");
+                            }
+                            if (astList.members.length == 3) {
+                                forStmt = new ForStatement(astList.members[0]);
+                                forStmt.cond = astList.members[1];
+                                forStmt.incr = astList.members[2];
+                            } else if (astList.members.length == 2) {
+                                forStmt = new ForStatement(astList.members[0]);
+                                forStmt.cond = astList.members[1];
+                                forStmt.incr = null
+                            } else if (astList.members.length == 1) {
+                                forStmt = new ForStatement(astList.members[0]);
                                 forStmt.cond = null;
+                                forStmt.incr = null
                             }
-                            else {
-                                forStmt.cond = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
-                                                       ErrorRecoverySet.Do,
-                                                       OperatorPrecedence.No, true,
-                                                       TypeContext.NoTypes);
-                                if (this.tok.tokenId != TokenID.Comma) {
-                                    this.skip(errorRecoverySet | ErrorRecoverySet.StmtStart);
-                                    ast = forStmt;
-                                    ast.flags |= ASTFlags.Error;
-                                }
-                            }
-                            this.tok = this.scanner.scan();
-                            if (this.tok.tokenId == TokenID.DO) {
-                                forStmt.incr = null;
-                            }
-                            else {
-                                forStmt.incr = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
-                                                       ErrorRecoverySet.RParen,
-                                                       OperatorPrecedence.No, true,
-                                                       TypeContext.NoTypes);
-                            }
+                            //this.chkCurTok(TokenID.Comma, "Expected ','", errorRecoverySet);
+                            //if (this.tok.tokenId == TokenID.Comma) {
+                            //    forStmt.cond = null;
+                            //    tmpVar = null;
+                            //} else {
+                            //    forStmt.cond = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
+                            //                           ErrorRecoverySet.Do,
+                            //                           OperatorPrecedence.No, true,
+                            //                           TypeContext.NoTypes);
+                            //    if (this.tok.tokenId != TokenID.Comma) {
+                            //        this.skip(errorRecoverySet | ErrorRecoverySet.StmtStart);
+                            //        ast = forStmt;
+                            //        ast.flags |= ASTFlags.Error;
+                            //    }
+                            //}
+                            //this.tok = this.scanner.scan();
+                            //if (this.tok.tokenId == TokenID.DO) {
+                            //    forStmt.incr = null;
+                            //}
+                            //else {
+                            //    forStmt.incr = this.parseExpr(errorRecoverySet | ErrorRecoverySet.Comma |
+                            //                           ErrorRecoverySet.RParen,
+                            //                           OperatorPrecedence.No, true,
+                            //                           TypeContext.NoTypes);
+                            //}
+
                             //this.chkCurTok(TokenID.RParen, "Expected ')'",
                             //          errorRecoverySet | ErrorRecoverySet.LCurly);
                             this.chkCurTok(TokenID.DO, "Expected 'do'",
@@ -3850,6 +3883,7 @@ module TypeScript {
                             forStmt.limChar = forStmt.body.limChar;
                             ast = forStmt;
                         }
+                        astList = null;
                         break;
                     //case TokenID.WITH: {
                     //    if (codeGenTarget < CodeGenTarget.ES5) {

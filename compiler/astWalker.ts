@@ -365,7 +365,7 @@ module TypeScript {
         }
 
         export function walkForInStatementChildren(preAst: ForInStatement, parent: AST, walker: IAstWalker): void {
-            preAst.lval = walker.walk(preAst.lval, preAst);
+            preAst.lval = <ASTList>walker.walk(preAst.lval, preAst);
             if (walker.options.goNextSibling) {
                 preAst.obj = walker.walk(preAst.obj, preAst);
             }

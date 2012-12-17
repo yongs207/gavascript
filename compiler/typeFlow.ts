@@ -2965,18 +2965,18 @@ module TypeScript {
 
         public typeCheckForIn(forInStmt: ForInStatement): ForInStatement {
             forInStmt.obj = this.typeCheck(forInStmt.obj);
-            forInStmt.lval = this.cast(this.typeCheck(forInStmt.lval), this.checker.stringType);
-            if (forInStmt.lval.nodeType == NodeType.VarDecl) {
+            forInStmt.lval = <ASTList>this.typeCheck(forInStmt.lval);//this.cast(this.typeCheck(forInStmt.lval), this.checker.stringType);//for modify
+            //if (forInStmt.lval.nodeType == NodeType.VarDecl) {
 
-                var varDecl = <LocalDecl>forInStmt.lval;
-                if (varDecl.typeExpr) {
-                    this.checker.errorReporter.simpleError(varDecl, "Variable declarations for for/in expressions may not contain a type annotation");
-                }
+            //    var varDecl = <LocalDecl>forInStmt.lval;
+            //    if (varDecl.typeExpr) {
+            //        this.checker.errorReporter.simpleError(varDecl, "Variable declarations for for/in expressions may not contain a type annotation");
+            //    }
 
-                if (varDecl.sym) {
-                    varDecl.sym.setType(this.checker.stringType);
-                }
-            }
+            //    if (varDecl.sym) {
+            //        varDecl.sym.setType(this.checker.stringType);
+            //    }
+            //}
             forInStmt.body = this.typeCheck(forInStmt.body);
             this.typeCheckCompoundStmtBlock(forInStmt.body, "for in statement");
             return forInStmt;

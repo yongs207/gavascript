@@ -1787,67 +1787,67 @@ module TypeScript {
     }
 
     export class ForInStatement extends Statement {
-        constructor (public lval: AST, public obj: AST) {
+        constructor (public lval: ASTList, public obj: AST) {
             super(NodeType.ForIn);
-            if (this.lval && (this.lval.nodeType == NodeType.VarDecl)) {
-                (<BoundDecl>this.lval).varFlags |= VarFlags.AutoInit;
-            }
+            //if (this.lval && (this.lval.nodeType == NodeType.VarDecl)) {
+            //    (<BoundDecl>this.lval).varFlags |= VarFlags.AutoInit;
+            //}
         }
         public statement: ASTSpan = new ASTSpan();
         public body: AST;
         public isStatementOrExpression() { return true; }
         public isLoop() { return true; }
 
-        public isFiltered() {
-            if (this.body) {
-                var singleItem: AST = null;
-                if (this.body.nodeType == NodeType.List) {
-                    var stmts = <ASTList>this.body;
-                    if (stmts.members.length == 1) {
-                        singleItem = stmts.members[0];
-                    }
-                }
-                else {
-                    singleItem = this.body;
-                }
-                // match template for filtering 'own' properties from obj
-                if (singleItem !== null) {
-                    if (singleItem.nodeType == NodeType.Block) {
-                        var block = <Block>singleItem;
-                        if ((block.stmts !== null) && (block.stmts.members.length == 1)) {
-                            singleItem = block.stmts.members[0];
-                        }
-                    }
-                    if (singleItem.nodeType == NodeType.If) {
-                        var cond = (<IfStatement>singleItem).cond;
-                        if (cond.nodeType == NodeType.Call) {
-                            var target = (<CallExpression>cond).target;
-                            if (target.nodeType == NodeType.Dot) {
-                                var binex = <BinaryExpression>target;
-                                if ((binex.operand1.nodeType == NodeType.Name) &&
-                                    (this.obj.nodeType == NodeType.Name) &&
-                                    ((<Identifier>binex.operand1).actualText == (<Identifier>this.obj).actualText)) {
-                                    var prop = <Identifier>binex.operand2;
-                                    if (prop.actualText == "hasOwnProperty") {
-                                        var args = (<CallExpression>cond).args;
-                                        if ((args !== null) && (args.members.length == 1)) {
-                                            var arg = args.members[0];
-                                            if ((arg.nodeType == NodeType.Name) &&
-                                                 (this.lval.nodeType == NodeType.Name)) {
-                                                if (((<Identifier>this.lval).actualText) == (<Identifier>arg).actualText) {
-                                                    return true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
+        //public isFiltered() {
+        //    if (this.body) {
+        //        var singleItem: AST = null;
+        //        if (this.body.nodeType == NodeType.List) {
+        //            var stmts = <ASTList>this.body;
+        //            if (stmts.members.length == 1) {
+        //                singleItem = stmts.members[0];
+        //            }
+        //        }
+        //        else {
+        //            singleItem = this.body;
+        //        }
+        //        // match template for filtering 'own' properties from obj
+        //        if (singleItem !== null) {
+        //            if (singleItem.nodeType == NodeType.Block) {
+        //                var block = <Block>singleItem;
+        //                if ((block.stmts !== null) && (block.stmts.members.length == 1)) {
+        //                    singleItem = block.stmts.members[0];
+        //                }
+        //            }
+        //            if (singleItem.nodeType == NodeType.If) {
+        //                var cond = (<IfStatement>singleItem).cond;
+        //                if (cond.nodeType == NodeType.Call) {
+        //                    var target = (<CallExpression>cond).target;
+        //                    if (target.nodeType == NodeType.Dot) {
+        //                        var binex = <BinaryExpression>target;
+        //                        if ((binex.operand1.nodeType == NodeType.Name) &&
+        //                            (this.obj.nodeType == NodeType.Name) &&
+        //                            ((<Identifier>binex.operand1).actualText == (<Identifier>this.obj).actualText)) {
+        //                            var prop = <Identifier>binex.operand2;
+        //                            if (prop.actualText == "hasOwnProperty") {
+        //                                var args = (<CallExpression>cond).args;
+        //                                if ((args !== null) && (args.members.length == 1)) {
+        //                                    var arg = args.members[0];
+        //                                    if ((arg.nodeType == NodeType.Name) &&
+        //                                         (this.lval.nodeType == NodeType.Name)) {
+        //                                        if (((<Identifier>this.lval).actualText) == (<Identifier>arg).actualText) {
+        //                                            return true;
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return false;
+        //}
 
         public emit(emitter: Emitter, tokenId: TokenID, startLine: bool) {
             emitter.emitParensAndCommentsInPlace(this, true);
@@ -1867,11 +1867,11 @@ module TypeScript {
         }
 
         public typeCheck(typeFlow: TypeFlow) {
-            if (typeFlow.checker.styleSettings.forin) {
-                if (!this.isFiltered()) {
-                    typeFlow.checker.errorReporter.styleError(this, "no hasOwnProperty filter");
-                }
-            }
+            //if (typeFlow.checker.styleSettings.forin) {
+            //    if (!this.isFiltered()) {
+            //        typeFlow.checker.errorReporter.styleError(this, "no hasOwnProperty filter");
+            //    }
+            //}
             return typeFlow.typeCheckForIn(this);
         }
 
